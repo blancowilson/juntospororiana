@@ -31,11 +31,11 @@ def seed_database():
             fecha_sorteo = datetime.now(timezone.utc) + timedelta(days=30)  # Sorteo en 30 días
             rifa_activa = Rifas(
                 titulo="Gran Rifa Solidaria por Oriana",
-                premio="Combo Tecnológico (Teléfono inteligente + Audífonos inalámbricos)",
-                precio_ticket_bs=180.00,  # Precio de referencia en Bs
-                precio_ticket_usd=5.00,   # Precio en USD
+                premio="Xiaomi Redmi 15c 8gb/256 Gb",
+                precio_ticket_bs=800.00,  # Precio de referencia en Bs
+                precio_ticket_usd=1.00,   # Precio en USD
                 total_numeros=1000,
-                loteria_referencia="Triple Caracas (Sorteo 7:00 PM)",
+                loteria_referencia="Triple Caracas",
                 fecha_sorteo=fecha_sorteo,
                 estado="Activa"
             )

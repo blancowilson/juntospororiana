@@ -107,7 +107,7 @@ async def comprar_tickets_aleatorios(
         cedula=reserva_data.cedula,
         telefono=reserva_data.telefono,
         monto_reportado=reserva_data.monto_reportado,
-        moneda="USD" if reserva_data.metodo_pago in ["Zelle", "Binance"] else "BS",
+        moneda="USD" if reserva_data.metodo_pago in ["Zelle", "Binance", "PayPal", "Paypal"] else "BS",
         metodo_pago=reserva_data.metodo_pago,
         referencia=reserva_data.referencia,
         tipo_aporte="Rifa"

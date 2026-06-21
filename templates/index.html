@@ -56,40 +56,32 @@
         <!-- B. Tarjetas de Pago -->
         <section class="mb-5">
             <h2 class="text-center fw-bold mb-4">Métodos de Pago</h2>
-            <div class="row g-4">
-                <div class="col-12 col-md-6 col-lg-3">
+            <div class="row g-4 justify-content-center">
+                <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
                         <div class="payment-icon text-primary mb-2"><i class="fa-solid fa-mobile-screen-button fa-2x"></i></div>
                         <h5 class="fw-bold text-dark">Pago Móvil</h5>
-                        <p class="mb-1 text-muted small">Banco de Venezuela (0102)</p>
-                        <p class="mb-1 text-muted small">Tlf: 0424-4053977</p>
-                        <p class="mb-0 text-muted small">CI: 31.457.018</p>
+                        <p class="mb-1 text-muted small"><strong>Banco Mercantil</strong></p>
+                        <p class="mb-1 text-muted small">Tlf: 0424-4697562</p>
+                        <p class="mb-1 text-muted small">CI: 18.240.284</p>
+                        <p class="mb-0 text-muted small">Titular: Oriana Torres</p>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
-                        <div class="payment-icon text-success mb-2"><i class="fa-solid fa-building-columns fa-2x"></i></div>
-                        <h5 class="fw-bold text-dark">Transferencia</h5>
-                        <p class="mb-1 text-muted small">Banco de Venezuela</p>
-                        <p class="mb-1 text-muted small">Cuenta Corriente</p>
-                        <p class="mb-0 text-muted x-small">0102-0000-00-0000000000</p>
-                        <p class="mb-0 text-muted small">CI: 31.457.018</p>
+                        <div class="payment-icon text-info mb-2"><i class="fa-brands fa-paypal fa-2x"></i></div>
+                        <h5 class="fw-bold text-dark">PayPal</h5>
+                        <p class="mb-1 mt-3 text-muted"><strong>blancowilson83@gmail.com</strong></p>
+                        <p class="mb-0 text-muted small">Aportes directos en USD</p>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
                         <div class="payment-icon text-warning mb-2"><i class="fa-solid fa-qrcode fa-2x"></i></div>
                         <h5 class="fw-bold text-dark">Binance Pay</h5>
                         <img src="/static/img/qr-binance.png" alt="QR Binance" class="img-fluid my-2 mx-auto" style="max-width: 100px; display: block;" onerror="this.src='https://placehold.co/100x100?text=QR+Binance'">
-                        <p class="mb-0 text-muted small">ID: 31457018</p>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
-                        <div class="payment-icon text-info mb-2"><i class="fa-solid fa-dollar-sign fa-2x"></i></div>
-                        <h5 class="fw-bold text-dark">Zelle</h5>
-                        <p class="mb-1 mt-3 text-muted">oriana.ayuda@email.com</p>
-                        <p class="mb-0 text-muted small">Titular: Juan Perez</p>
+                        <p class="mb-1 text-muted small">Pay ID: <strong>10061357</strong></p>
+                        <p class="mb-0 text-muted small">User ID: <strong>User-bef80</strong></p>
                     </div>
                 </div>
             </div>
@@ -131,9 +123,8 @@
                                 <select class="form-select rounded-3" name="metodo_pago" required>
                                     <option value="">Método de Pago...</option>
                                     <option value="PagoMovil">Pago Móvil</option>
-                                    <option value="Transferencia">Transferencia</option>
-                                    <option value="Binance">Binance</option>
-                                    <option value="Zelle">Zelle</option>
+                                    <option value="PayPal">PayPal</option>
+                                    <option value="Binance">Binance Pay</option>
                                 </select>
                             </div>
                             <div class="mb-2">
@@ -289,15 +280,19 @@
                         <div class="bg-light p-3 rounded-3 mb-4 border">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Banco:</span>
-                                <span class="fw-semibold text-end">Banco de Venezuela (Pago Móvil)</span>
+                                <span class="fw-semibold text-end">Mercantil (Pago Móvil)</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Teléfono:</span>
-                                <span class="fw-semibold">04244053977</span>
+                                <span class="fw-semibold">04244697562</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Cédula:</span>
-                                <span class="fw-semibold">31457018</span>
+                                <span class="fw-semibold">18240284</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Titular:</span>
+                                <span class="fw-semibold">Oriana Torres</span>
                             </div>
                             <div class="d-flex justify-content-between border-top pt-2">
                                 <span class="fw-bold text-dark">Monto:</span>
