@@ -1,0 +1,90 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+    border-bottom: 5px solid #0a58ca;
+}
+
+/* Tarjetas de Pago */
+.payment-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.payment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+
+.payment-icon {
+    opacity: 0.85;
+}
+
+/* Glassmorphism - El Pote de la Esperanza */
+.glass-pote {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(13, 202, 240, 0.8));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Scrollbar for list */
+#lista-aportantes::-webkit-scrollbar {
+    width: 6px;
+}
+#lista-aportantes::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 4px;
+}
+#lista-aportantes::-webkit-scrollbar-thumb {
+    background: #ccc; 
+    border-radius: 4px;
+}
+#lista-aportantes::-webkit-scrollbar-thumb:hover {
+    background: #aaa; 
+}
+
+/* Utility styles */
+.x-small {
+    font-size: 0.75rem;
+}
+
+.x-small-tag {
+    font-size: 0.65rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.shadow-2xs {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-3xs {
+    box-shadow: 0 0.5px 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Quantity Selection custom styles */
+.qty-btn {
+    font-size: 1.1rem;
+    border-radius: 12px;
+    transition: all 0.2s;
+    height: 55px;
+}
+
+.qty-btn:hover {
+    transform: scale(1.03);
+}
+
+/* Inputs styling */
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
+    border-color: #198754;
+}

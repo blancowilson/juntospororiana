@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juntos por Oriana</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-light">
+
+    <!-- CONFIGURACIÓN MANUAL RÁPIDA PARA EL HOSTING ESTÁTICO -->
+    <script>
+        // 1. Escribe aquí el número de WhatsApp receptor (con código de país, ej. 58 para Venezuela)
+        const WHATSAPP_NUMBER = "584244053977"; 
+
+        // 2. Modifica estos montos manualmente para actualizar la barra del pote de esperanza
+        const META_TOTAL = 2600.00;
+        const RECAUDADO_MANUAL = 350.00; // Cambia esto cuando recibas nuevos aportes
+
+        // 3. Configuración de la Rifa
+        const TICKET_PRICE_BS = 180.00;
+        const TICKET_PRICE_USD = 5.00;
+        const RIFA_TITULO = "Gran Rifa Solidaria por Oriana";
+        const RIFA_PREMIO = "Combo Tecnológico (Teléfono inteligente + Audífonos inalámbricos)";
+        const RIFA_LOTERIA = "Triple Caracas (Sorteo 7:00 PM)";
+        const RIFA_FECHA = "15 de Agosto 2026";
+    </script>
+
+    <!-- A. Hero Section -->
+    <header class="hero-section text-center text-white py-5 mb-5 shadow">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-2">Juntos por Oriana</h1>
+            <p class="lead mb-3 max-w-xl mx-auto px-2" style="font-size: 1.15rem; line-height: 1.6; font-weight: 500;">
+                Nuestra meta de recaudación es de <strong>$2,600</strong> para cubrir la colocación de un catéter, exámenes especiales (tomografías), preparación pre-operatoria y una posible segunda intervención. Como creyentes en Dios, confiamos en que pueda ser sanada con o sin tantos procedimientos, pero damos este paso de fe con tu valioso apoyo. ¡Cada aporte cuenta!
+            </p>
+            <div class="row justify-content-center mb-4">
+                <div class="col-12 col-md-8">
+                    <div class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden border border-3 border-white">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="Video de la Campaña" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+            <!-- Compartir por Redes Sociales -->
+            <div class="mt-2">
+                <p class="mb-2 text-white-50 fw-semibold x-small"><i class="fa-solid fa-share-nodes me-2"></i>¡AYÚDANOS COMPARTIENDO LA CAMPAÑA!</p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a id="share-whatsapp" href="#" class="btn btn-success rounded-pill px-3 shadow-3xs text-white btn-sm fw-semibold" target="_blank">
+                        <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
+                    </a>
+                    <a id="share-facebook" href="#" class="btn btn-primary rounded-pill px-3 shadow-3xs text-white btn-sm fw-semibold" style="background-color: #1877F2;" target="_blank">
+                        <i class="fa-brands fa-facebook-f me-1"></i> Facebook
+                    </a>
+                    <a id="share-telegram" href="#" class="btn btn-info rounded-pill px-3 shadow-3xs text-white btn-sm fw-semibold" style="background-color: #0088cc;" target="_blank">
+                        <i class="fa-brands fa-telegram me-1"></i> Telegram
+                    </a>
+                    <button onclick="copyCampaignLink()" class="btn btn-light rounded-pill px-3 shadow-3xs btn-sm fw-semibold text-dark">
+                        <i class="fa-solid fa-link me-1"></i> Copiar Link (Instagram)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- B. Tarjetas de Pago -->
+        <section class="mb-5">
+            <h2 class="text-center fw-bold mb-4">Métodos de Pago</h2>
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
+                        <div class="payment-icon text-primary mb-2"><i class="fa-solid fa-mobile-screen-button fa-2x"></i></div>
+                        <h5 class="fw-bold text-dark">Pago Móvil</h5>
+                        <p class="mb-1 text-muted small">Banco de Venezuela (0102)</p>
+                        <p class="mb-1 text-muted small">Tlf: 0424-4053977</p>
+                        <p class="mb-0 text-muted small">CI: 31.457.018</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
+                        <div class="payment-icon text-success mb-2"><i class="fa-solid fa-building-columns fa-2x"></i></div>
+                        <h5 class="fw-bold text-dark">Transferencia</h5>
+                        <p class="mb-1 text-muted small">Banco de Venezuela</p>
+                        <p class="mb-1 text-muted small">Cuenta Corriente</p>
+                        <p class="mb-0 text-muted x-small">0102-0000-00-0000000000</p>
+                        <p class="mb-0 text-muted small">CI: 31.457.018</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
+                        <div class="payment-icon text-warning mb-2"><i class="fa-solid fa-qrcode fa-2x"></i></div>
+                        <h5 class="fw-bold text-dark">Binance Pay</h5>
+                        <img src="qr-binance.png" alt="QR Binance" class="img-fluid my-2 mx-auto" style="max-width: 100px; display: block;" onerror="this.src='https://placehold.co/100x100?text=QR+Binance'">
+                        <p class="mb-0 text-muted small">ID: 31457018</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
+                        <div class="payment-icon text-info mb-2"><i class="fa-solid fa-dollar-sign fa-2x"></i></div>
+                        <h5 class="fw-bold text-dark">Zelle</h5>
+                        <p class="mb-1 mt-3 text-muted">oriana.ayuda@email.com</p>
+                        <p class="mb-0 text-muted small">Titular: Juan Perez</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- C. El Pote de la Esperanza y Formulario -->
+        <section class="row mb-5 align-items-stretch">
+            <div class="col-12 col-md-6 mb-4 mb-md-0">
+                <div class="glass-pote p-4 h-100 position-relative d-flex flex-column justify-content-between rounded-4">
+                    <div>
+                        <h3 class="fw-bold text-white text-center mb-4">El Pote de Esperanza</h3>
+                        
+                        <div id="pote-progress-container">
+                            <div class="progress mb-3" style="height: 30px; border-radius: 15px; background-color: rgba(255,255,255,0.25);">
+                                <div id="pote-bar" class="progress-bar bg-success progress-bar-striped progress-bar-animated rounded-pill fw-bold" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    0%
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between text-white fw-bold mb-4">
+                                <span>Recaudado: $<span id="pote-recaudado-text">0.00</span></span>
+                                <span>Meta: $<span id="pote-meta-text">0.00</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-4 shadow-sm mt-3">
+                        <h5 class="text-center mb-3 text-dark fw-bold">Reportar Donación Directa</h5>
+                        <!-- Formulario redirige directamente a WhatsApp -->
+                        <form id="donation-form" onsubmit="submitDonationToWhatsapp(event)">
+                            <div class="mb-2">
+                                <input type="text" class="form-control rounded-3" id="don-nombre" placeholder="Tu Nombre" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="number" step="0.01" class="form-control rounded-3" id="don-monto" placeholder="Monto (USD)" required>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-select rounded-3" id="don-metodo" required>
+                                    <option value="">Método de Pago...</option>
+                                    <option value="Pago Móvil">Pago Móvil</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                    <option value="Binance">Binance</option>
+                                    <option value="Zelle">Zelle</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" class="form-control rounded-3" id="don-referencia" placeholder="Referencia" required>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control rounded-3" id="don-mensaje" placeholder="Déjale un mensaje a Oriana (Opcional)" rows="2"></textarea>
+                            </div>
+                            <button class="btn btn-success w-100 fw-bold shadow-sm rounded-pill"><i class="fa-brands fa-whatsapp me-2"></i>Enviar Donación por WhatsApp</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="card h-100 shadow-sm border-0 rounded-4 bg-white">
+                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                        <h4 class="fw-bold text-dark text-center">Corazones Solidarios</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Lista simulada de aportantes del Pote -->
+                        <div id="lista-aportantes" class="p-2" style="overflow-y: auto; max-height: 430px;">
+                            <div class="p-3 mb-2 border-bottom">
+                                <h6 class="mb-1 text-primary fw-bold">Juan Pérez ha donado!</h6>
+                                <p class="mb-0 fst-italic text-muted small">"Con mucha fe en que todo saldrá excelente. ¡Fuerza Oriana!"</p>
+                            </div>
+                            <div class="p-3 mb-2 border-bottom">
+                                <h6 class="mb-1 text-primary fw-bold">María Rodríguez ha donado!</h6>
+                                <p class="mb-0 fst-italic text-muted small">"Dios tiene el control de tu salud. Bendiciones."</p>
+                            </div>
+                            <div class="p-3 mb-2 border-bottom">
+                                <h6 class="mb-1 text-primary fw-bold">Pedro Gómez ha donado!</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- D. Compra Simplificada de Rifa -->
+        <section class="mb-5 bg-white p-4 rounded-4 shadow-sm border-top border-4 border-success">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-4 mb-lg-0">
+                    <h2 class="fw-bold text-dark mb-2" id="rifa-titulo-val">Cargando Rifa...</h2>
+                    <p class="text-muted"><i class="fa-regular fa-calendar-days me-2"></i>Sorteo: <span id="rifa-fecha-val">-</span></p>
+                    <div class="d-flex align-items-center gap-3 my-3">
+                        <div class="px-3 py-2 bg-light border rounded-3 text-center">
+                            <span class="d-block text-uppercase text-muted x-small">Precio Boleto</span>
+                            <strong class="fs-4 text-success">Bs. <span id="rifa-precio-bs-val">0.00</span></strong>
+                        </div>
+                        <div class="px-3 py-2 bg-light border rounded-3 text-center">
+                            <span class="d-block text-uppercase text-muted x-small">Equivalente</span>
+                            <strong class="fs-4 text-secondary">$<span id="rifa-precio-usd-val">0.00</span></strong>
+                        </div>
+                    </div>
+                    <div class="alert alert-light border-start border-4 border-info py-2 my-3">
+                        <p class="mb-0 fw-semibold text-info small"><i class="fa-solid fa-circle-info me-2"></i>Lotería de Referencia: <span id="rifa-loteria-val">-</span></p>
+                    </div>
+                    <div class="mt-4">
+                        <h5 class="fw-bold text-dark"><i class="fa-solid fa-trophy text-warning me-2"></i>Premio a sortear:</h5>
+                        <p class="lead text-success fw-semibold" id="rifa-premio-val">-</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="p-3 border rounded-4 bg-light shadow-2xs">
+                        <h5 class="fw-bold text-dark text-center mb-3">Elige la cantidad de boletos</h5>
+                        
+                        <!-- Botones de Selección Rápida -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(1)">1</button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-success w-100 py-3 fw-bold qty-btn position-relative shadow-3xs" onclick="setQuantity(2)">
+                                    2
+                                    <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger x-small" style="font-size: 8px;">Popular</span>
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(5)">5</button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(10)">10</button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(25)">25</button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(50)">50</button>
+                            </div>
+                        </div>
+
+                        <!-- Selector manual +/- -->
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-4 bg-white border p-2 rounded-3 shadow-3xs">
+                            <button class="btn btn-light rounded-circle shadow-3xs" style="width: 40px; height: 40px;" onclick="adjustQuantity(-1)"><i class="fa-solid fa-minus"></i></button>
+                            <input type="number" id="ticket-qty-input" class="form-control text-center border-0 fw-bold fs-5" style="width: 80px;" value="2" min="1" onchange="updateTotalAmount()">
+                            <button class="btn btn-light rounded-circle shadow-3xs" style="width: 40px; height: 40px;" onclick="adjustQuantity(1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+
+                        <!-- Botón Participar -->
+                        <button class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow d-flex justify-content-between align-items-center px-4" onclick="openCheckoutModal()">
+                            <span>Participar</span>
+                            <span id="participate-total-btn" class="fs-5">Bs. 360.00</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- E. Modal de Proceso de Compra (WIZARD REDIRIGE A WHATSAPP AL FINAL) -->
+    <div class="modal fade" id="checkoutModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-body p-0" id="modal-wizard-body">
+                    
+                    <!-- PASO 1: Verificar Monto -->
+                    <div id="wizard-step-1" class="p-4 d-block">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="modal-title fw-bold text-dark" id="checkoutModalLabel">Verifica el monto antes de continuar</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="py-3">
+                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                                <span class="text-muted">Precio por boleto:</span>
+                                <span class="fw-semibold">Bs. <span id="price-per-ticket-text">0.00</span></span>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                                <span class="text-muted">Cantidad de boletos:</span>
+                                <span class="fw-semibold" id="qty-text">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between pt-2">
+                                <span class="fw-bold text-dark fs-5">Total a pagar:</span>
+                                <span class="fw-bold text-success fs-5">Bs. <span id="total-to-pay-text">0.00</span></span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-3 mt-4" onclick="goToStep(2)">Continuar</button>
+                    </div>
+
+                    <!-- PASO 2: Realiza el Pago -->
+                    <div id="wizard-step-2" class="p-4 d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="modal-title fw-bold text-dark">Realiza el pago</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <p class="text-muted small">Sigue las instrucciones para completar tu pago móvil:</p>
+                        <div class="bg-light p-3 rounded-3 mb-4 border">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Banco:</span>
+                                <span class="fw-semibold text-end">Banco de Venezuela (Pago Móvil)</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Teléfono:</span>
+                                <span class="fw-semibold">04244053977</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Cédula:</span>
+                                <span class="fw-semibold">31457018</span>
+                            </div>
+                            <div class="d-flex justify-content-between border-top pt-2">
+                                <span class="fw-bold text-dark">Monto:</span>
+                                <span class="fw-bold text-success">Bs. <span id="payment-amount-text">0.00</span></span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-3" onclick="goToStep(3)">Reportar pago</button>
+                    </div>
+
+                    <!-- PASO 3: Reportar Pago (Formulario) -->
+                    <div id="wizard-step-3" class="p-4 d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="modal-title fw-bold text-dark">Reportar pago</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <p class="text-muted small">Completa los datos de tu transacción para enviarla por WhatsApp:</p>
+                        
+                        <form id="raffle-purchase-form" onsubmit="submitRaffleToWhatsapp(event)">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-semibold">Nombre Completo</label>
+                                <input type="text" id="raf-nombre" class="form-control rounded-3" placeholder="Nombre completo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-semibold">Banco Emisor</label>
+                                <select id="raf-banco" class="form-select rounded-3" required>
+                                    <option value="">Selecciona tu banco...</option>
+                                    <option value="BANCO DE VENEZUELA">BANCO DE VENEZUELA</option>
+                                    <option value="BANESCO">BANESCO</option>
+                                    <option value="MERCANTIL">MERCANTIL</option>
+                                    <option value="PROVINCIAL">BBVA PROVINCIAL</option>
+                                    <option value="BNC">BNC</option>
+                                    <option value="BANCARIBE">BANCARIBE</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-semibold">Número de Referencia (Últimos 4-6 dígitos)</label>
+                                <input type="text" id="raf-referencia" class="form-control rounded-3" placeholder="Ej. 41324" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-semibold">Cédula del Titular</label>
+                                <input type="text" id="raf-cedula" class="form-control rounded-3" placeholder="V-12345678" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-semibold">Teléfono asociado</label>
+                                <input type="text" id="raf-telefono" class="form-control rounded-3" placeholder="Ej. 04121234567" required>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50 py-3 fw-bold rounded-3" onclick="goToStep(2)"><i class="fa-solid fa-arrow-left me-2"></i>Volver</button>
+                                <button type="submit" class="btn btn-success w-50 py-3 fw-bold rounded-3"><i class="fa-brands fa-whatsapp me-2"></i>Reportar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- PASO 4: Éxito manual -->
+                    <div id="wizard-step-4" class="p-4 d-none text-center">
+                        <div class="mb-3">
+                            <span class="fs-1">🎉</span>
+                        </div>
+                        <h4 class="fw-bold text-success">¡Reporte Enviado!</h4>
+                        <p class="text-muted">Tu reporte fue enviado a nuestro WhatsApp. Una vez verificado el pago móvil, te enviaremos tus números asignados por ese mismo medio.</p>
+                        <button type="button" class="btn btn-success px-4 mt-3 fw-bold rounded-pill" data-bs-dismiss="modal" onclick="window.location.reload()">Finalizar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- LÓGICA DE CONTROL DEL SITIO ESTÁTICO -->
+    <script>
+        let checkoutModalObj = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            checkoutModalObj = new bootstrap.Modal(document.getElementById('checkoutModal'));
+            
+            // Inyectar datos iniciales de la rifa en la página
+            document.getElementById("rifa-titulo-val").innerText = RIFA_TITULO;
+            document.getElementById("rifa-fecha-val").innerText = RIFA_FECHA;
+            document.getElementById("rifa-precio-bs-val").innerText = TICKET_PRICE_BS.toFixed(2);
+            document.getElementById("rifa-precio-usd-val").innerText = TICKET_PRICE_USD.toFixed(2);
+            document.getElementById("rifa-loteria-val").innerText = RIFA_LOTERIA;
+            document.getElementById("rifa-premio-val").innerText = RIFA_PREMIO;
+
+            // Inyectar datos del pote
+            document.getElementById("pote-recaudado-text").innerText = RECAUDADO_MANUAL.toFixed(2);
+            document.getElementById("pote-meta-text").innerText = META_TOTAL.toFixed(2);
+            let pct = (RECAUDADO_MANUAL / META_TOTAL) * 100;
+            if (pct > 100) pct = 100;
+            const bar = document.getElementById("pote-bar");
+            bar.style.width = `${pct}%`;
+            bar.innerText = `${pct.toFixed(1)}%`;
+            bar.setAttribute("aria-valuenow", pct.toFixed(1));
+
+            // Configurar links de compartir
+            const currentUrl = encodeURIComponent(window.location.href);
+            const shareText = encodeURIComponent("Ayúdanos en la campaña 'Juntos por Oriana' para cubrir sus gastos médicos de emergencia. Colabora o comparte aquí: ");
+            
+            document.getElementById("share-whatsapp").href = `https://api.whatsapp.com/send?text=${shareText}${currentUrl}`;
+            document.getElementById("share-facebook").href = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
+            document.getElementById("share-telegram").href = `https://t.me/share/url?url=${currentUrl}&text=${shareText}`;
+
+            updateTotalAmount();
+        });
+
+        // Configurar enlaces para copiar al portapapeles
+        function copyCampaignLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert("¡Enlace copiado al portapapeles! Compártelo en tus redes, estados de WhatsApp o biografía de Instagram.");
+            }).catch(err => {
+                console.error("Error al copiar link: ", err);
+            });
+        }
+
+        // Configurar cantidades de tickets
+        function setQuantity(qty) {
+            const input = document.getElementById("ticket-qty-input");
+            input.value = qty;
+            
+            document.querySelectorAll(".qty-btn").forEach(btn => {
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-outline-success");
+            });
+            event.target.classList.remove("btn-outline-success");
+            event.target.classList.add("btn-success");
+
+            updateTotalAmount();
+        }
+
+        function adjustQuantity(amount) {
+            const input = document.getElementById("ticket-qty-input");
+            let val = parseInt(input.value) + amount;
+            if (val < 1) val = 1;
+            input.value = val;
+            
+            updateTotalAmount();
+        }
+
+        function updateTotalAmount() {
+            const input = document.getElementById("ticket-qty-input");
+            let val = parseInt(input.value) || 1;
+            if (val < 1) val = 1;
+            input.value = val;
+
+            const total = val * TICKET_PRICE_BS;
+            document.getElementById("participate-total-btn").innerText = `Bs. ${total.toFixed(2)}`;
+            
+            // Elementos del Modal
+            document.getElementById("price-per-ticket-text").innerText = TICKET_PRICE_BS.toFixed(2);
+            document.getElementById("qty-text").innerText = val;
+            document.getElementById("total-to-pay-text").innerText = total.toFixed(2);
+            document.getElementById("payment-amount-text").innerText = total.toFixed(2);
+        }
+
+        function openCheckoutModal() {
+            goToStep(1);
+            checkoutModalObj.show();
+        }
+
+        function goToStep(step) {
+            document.getElementById("wizard-step-1").className = "p-4 d-none";
+            document.getElementById("wizard-step-2").className = "p-4 d-none";
+            document.getElementById("wizard-step-3").className = "p-4 d-none";
+            document.getElementById("wizard-step-4").className = "p-4 d-none";
+
+            document.getElementById(`wizard-step-${step}`).className = "p-4 d-block";
+        }
+
+        // REDIRECCIONES DE FORMULARIO A WHATSAPP
+        function submitDonationToWhatsapp(event) {
+            event.preventDefault();
+            const nombre = document.getElementById("don-nombre").value;
+            const monto = document.getElementById("don-monto").value;
+            const metodo = document.getElementById("don-metodo").value;
+            const referencia = document.getElementById("don-referencia").value;
+            const mensaje = document.getElementById("don-mensaje").value || "Sin mensaje";
+
+            const text = `Hola! Reporto una Donación Directa para Oriana:
+- *Nombre:* ${nombre}
+- *Monto:* $${monto}
+- *Método:* ${metodo}
+- *Referencia:* ${referencia}
+- *Mensaje:* "${mensaje}"`;
+
+            const waUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(text)}`;
+            window.open(waUrl, "_blank");
+            alert("Redirigiendo a WhatsApp para enviar el comprobante...");
+        }
+
+        function submitRaffleToWhatsapp(event) {
+            event.preventDefault();
+            const nombre = document.getElementById("raf-nombre").value;
+            const banco = document.getElementById("raf-banco").value;
+            const referencia = document.getElementById("raf-referencia").value;
+            const cedula = document.getElementById("raf-cedula").value;
+            const telefono = document.getElementById("raf-telefono").value;
+            
+            const qty = document.getElementById("qty-text").innerText;
+            const total = document.getElementById("total-to-pay-text").innerText;
+
+            const text = `Hola! Reporto Pago de Boletos de Rifa para Oriana:
+- *Nombre:* ${nombre}
+- *Cantidad de boletos:* ${qty}
+- *Total a pagar:* Bs. ${total}
+- *Banco emisor:* ${banco}
+- *Referencia:* ${referencia}
+- *Cédula titular:* ${cedula}
+- *Teléfono:* ${telefono}`;
+
+            const waUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(text)}`;
+            window.open(waUrl, "_blank");
+            
+            // Pasar a pantalla de éxito
+            goToStep(4);
+        }
+    </script>
+</body>
+</html>
