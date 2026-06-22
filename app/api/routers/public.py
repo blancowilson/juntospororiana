@@ -57,7 +57,7 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
     # 1. Obtener campaña activa
     campana = db.execute(select(Campana).where(Campana.activa == True)).scalar_one_or_none()
     if not campana:
-        campana = Campana(meta_total=2600.00, recaudado_manual=0.00)
+        campana = Campana(meta_total=2750.00, recaudado_manual=0.00)
 
     # 2. Obtener rifa activa
     rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
@@ -269,7 +269,7 @@ async def aportar_directo(
     # Obtener campaña activa para los límites de meta y recaudación manual
     campana = db.execute(select(Campana).where(Campana.activa == True)).scalar_one_or_none()
     if not campana:
-        campana = Campana(meta_total=2600.00, recaudado_manual=0.00)
+        campana = Campana(meta_total=2750.00, recaudado_manual=0.00)
 
     # Recalcular recaudación total (Manual + Aportantes en BD convertidos a USD si están en BS)
     from sqlalchemy import func

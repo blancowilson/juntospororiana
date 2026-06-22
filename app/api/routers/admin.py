@@ -50,7 +50,7 @@ async def admin_panel_view(request: Request, db: Session = Depends(get_db)):
 
     # Campaña activa
     campana = db.execute(select(Campana).where(Campana.activa == True)).scalar_one_or_none()
-    meta_total = float(campana.meta_total) if campana else 2600.00
+    meta_total = float(campana.meta_total) if campana else 2750.00
     recaudado_manual = float(campana.recaudado_manual) if campana else 0.00
     
     # 2. Obtener lista de aportantes ordenada por fecha
