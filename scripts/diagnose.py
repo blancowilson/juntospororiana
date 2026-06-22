@@ -9,6 +9,7 @@ mas comunes que dejan la app fuera de servicio.
 import os
 import sys
 import subprocess
+import importlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -126,11 +127,7 @@ def _is_default(contenido, var):
 def check_db_connection():
     print(f"\n{AZUL}== Conexion a la base de datos =={RESET}")
     try:
-        # Recargar settings con el .env actual
-        from app.core.config import Settings
-        from app.core import config as cfg_mod
-        importlib.reload(cfg_mod)
-        s = cfg_mod.settings
+        from app.core.config import settings as s
         from sqlalchemy import create_engine, text
         eng = create_engine(s.database_url, connect_args={"connect_timeout": 5} if "sqlite" not in s.database_url else {})
         with eng.connect() as conn:
@@ -142,8 +139,6 @@ def check_db_connection():
         _info("Revisa DB_SERVER, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME en .env")
         _info("Asegurate de que PostgreSQL este corriendo: sudo systemctl status postgresql")
         return False
-    finally:
-        import importlib
 
 
 def check_app_imports():
@@ -185,6 +180,27 @@ def check_service():
 
 def check_docker():
     print(f"\n{AZUL}== Docker / OpenWA =={RESET}")
+    # Primero ver si docker existe
+    docker_ok = False
+    try:
+        out = subprocess.run(
+            ["docker", "--version"],
+            capture_output=True, text=True, timeout=5
+        )
+        docker_ok = (out.returncode == 0)
+    except FileNotFoundError:
+        docker_ok = False
+    except subprocess.TimeoutExpired:
+        docker_ok = False
+    except Exception:
+        docker_ok = False
+
+    if not docker_ok:
+        _warn("docker no instalado o no en PATH")
+        _info("La app funciona sin Docker, pero no tendra WhatsApp hasta instalarlo.")
+        _info("Instalar Docker: https://docs.docker.com/engine/install/")
+        return
+
     try:
         out = subprocess.run(
             ["docker", "ps", "--filter", "name=openwa", "--format", "{{.Names}}: {{.Status}}"],
@@ -195,8 +211,6 @@ def check_docker():
         else:
             _warn("OpenWA no esta corriendo. La pagina funciona pero sin WhatsApp.")
             _info("Arrancar: cd /var/www/juntospororiana/openwa && docker compose up -d")
-    except FileNotFoundError:
-        _warn("docker no instalado o no en PATH")
     except subprocess.TimeoutExpired:
         _warn("docker timeout")
     except Exception as e:
