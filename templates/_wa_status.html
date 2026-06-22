@@ -1,6 +1,6 @@
 {% if estado.conectado %}
     <div class="d-flex align-items-center mb-3">
-        <span class="status-dot status-ON"></span>
+        <span class="status-dot status-CONNECTED"></span>
         <h4 class="mb-0 text-success fw-bold">Conectado</h4>
     </div>
     <ul class="list-unstyled small mb-0">
@@ -8,34 +8,51 @@
         {% if estado.push_name %}<li class="mb-2"><i class="fa-solid fa-user text-muted me-2"></i><strong>Nombre:</strong> {{ estado.push_name }}</li>{% endif %}
         {% if estado.platform %}<li class="mb-2"><i class="fa-solid fa-microchip text-muted me-2"></i><strong>Plataforma:</strong> {{ estado.platform }}</li>{% endif %}
     </ul>
-{% elif estado.status == 'SCAN_QR' %}
+{% elif estado.status == 'QR_READY' %}
     <div class="d-flex align-items-center mb-3">
-        <span class="status-dot status-OFF"></span>
+        <span class="status-dot status-QR_READY"></span>
         <h4 class="mb-0 text-warning fw-bold">Esperando escaneo de QR</h4>
     </div>
-    <p class="text-muted small mb-0">Escanea el QR con tu WhatsApp para vincular.</p>
-{% elif estado.status == 'INITIALIZING' or estado.status == 'CONNECTING' %}
+    <p class="text-muted small mb-0">Escanea el QR de la derecha con tu WhatsApp para vincular.</p>
+{% elif estado.status == 'INITIALIZING' %}
     <div class="d-flex align-items-center mb-3">
-        <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
-        <h4 class="mb-0 text-warning fw-bold">Iniciando...</h4>
+        <span class="spinner-grow spinner-grow-sm text-info" role="status"></span>
+        <h4 class="mb-0 text-info fw-bold">Iniciando engine...</h4>
     </div>
-    <p class="text-muted small mb-0">Espera unos segundos.</p>
+    <p class="text-muted small mb-0">Espera 15-25 segundos mientras Chromium carga WhatsApp Web.</p>
+{% elif estado.status == 'AUTHENTICATING' %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="spinner-grow spinner-grow-sm text-info" role="status"></span>
+        <h4 class="mb-0 text-info fw-bold">Autenticando...</h4>
+    </div>
+    <p class="text-muted small mb-0">QR escaneado. Esperando confirmacion del servidor de WhatsApp. Si pasa mas de 2 minutos asi,Meta te esta aplicando rate-limit.</p>
+{% elif estado.status == 'DISCONNECTED' %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-DISCONNECTED"></span>
+        <h4 class="mb-0 text-warning fw-bold">Desconectado</h4>
+    </div>
+    <p class="text-muted small mb-0">Pulsa <strong>Iniciar sesion</strong> para volver a generar el QR.</p>
 {% elif estado.status == 'NOT_FOUND' %}
     <div class="d-flex align-items-center mb-3">
-        <span class="status-dot status-ERROR"></span>
+        <span class="status-dot status-NOT_FOUND"></span>
         <h4 class="mb-0 text-danger fw-bold">Sesion no existe</h4>
     </div>
     <p class="text-muted small mb-0">{{ estado.error or 'Pulsa "Iniciar sesion" para crearla.' }}</p>
 {% elif estado.status == 'OFFLINE' %}
     <div class="d-flex align-items-center mb-3">
-        <span class="status-dot status-ERROR"></span>
+        <span class="status-dot status-OFFLINE"></span>
         <h4 class="mb-0 text-danger fw-bold">OpenWA no responde</h4>
     </div>
     <p class="text-muted small mb-0">{{ estado.error or 'Revisa que el contenedor Docker este corriendo.' }}</p>
+{% elif estado.error %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-ERROR"></span>
+        <h4 class="mb-0 text-danger fw-bold">Error</h4>
+    </div>
+    <p class="text-muted small mb-0">{{ estado.error }}</p>
 {% else %}
     <div class="d-flex align-items-center mb-3">
         <span class="status-dot status-OFF"></span>
         <h4 class="mb-0 text-warning fw-bold">{{ estado.status or 'Desconocido' }}</h4>
     </div>
-    {% if estado.error %}<p class="text-muted small mb-0">{{ estado.error }}</p>{% endif %}
 {% endif %}

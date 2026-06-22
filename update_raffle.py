@@ -7,8 +7,8 @@ from app.models.all_models import Campana, Rifas
 META_TOTAL = 2750.00
 FECHA_SORTEO = datetime(2026, 7, 22, 19, 0, 0, tzinfo=timezone.utc)
 PREMIO = "Xiaomi Redmi 15c 8gb/256 Gb"
-PRECIO_TICKET_BS = 800.00
-PRECIO_TICKET_USD = 1.00
+PRECIO_TICKET_BS = 425.00
+PRECIO_TICKET_USD = 0.50
 LOTERIA = "Triple Caracas"
 TITULO = "Gran Rifa Solidaria por Oriana"
 
