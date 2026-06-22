@@ -1,0 +1,33 @@
+# =========================================================
+# docker-compose para OpenWA (Juntos por Oriana)
+# Sirve el API + Dashboard en http://127.0.0.1:2785
+# =========================================================
+
+services:
+  openwa:
+    image: rmyndharis/openwa:latest
+    container_name: juntospororiana-openwa
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:2785:2785"
+    volumes:
+      - ./data:/app/data
+    # Solo necesario si usas ENGINE_TYPE=whatsapp-web.js
+    # Capas SYS_ADMIN y grupo de Chromium para Puppeteer
+    cap_add:
+      - SYS_ADMIN
+    # Si usas baileys puedes comentar cap_add y el bloque "shm_size" de abajo
+    shm_size: "1g"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:2785/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

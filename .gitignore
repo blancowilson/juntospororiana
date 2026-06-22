@@ -47,3 +47,7 @@ logs/
 # Archivos temporales del proyecto (capturas, QRs sin procesar, etc.)
 Temporal/
 temporal/
+
+# OpenWA (WhatsApp API Gateway): sesiones, base de datos local, API key
+openwa/data/
+openwa/.env

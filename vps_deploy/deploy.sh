@@ -17,7 +17,22 @@ apt-get update && apt-get upgrade -y
 echo "=== 2. Instalando dependencias base ==="
 apt-get install -y python3 python3-pip python3-venv nginx curl git \
                    build-essential libssl-dev libffi-dev python3-dev \
-                   ufw fail2ban certbot python3-certbot-nginx
+                   ufw fail2ban certbot python3-certbot-nginx \
+                   ca-certificates gnupg
+
+echo "=== 2.1. Instalando Docker (necesario para OpenWA) ==="
+if ! command -v docker &> /dev/null; then
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+        > /etc/apt/sources.list.d/docker.list
+    apt-get update
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    systemctl enable --now docker
+fi
+# Agregar al usuario de la app al grupo docker para usar docker sin sudo
+usermod -aG docker ${APP_USER} 2>/dev/null || true
 
 echo "=== 3. Instalando PostgreSQL ==="
 apt-get install -y postgresql postgresql-contrib
@@ -79,6 +94,23 @@ echo "   sudo cp ${APP_DIR}/vps_deploy/nginx.conf /etc/nginx/sites-available/jun
 echo "   sudo ln -sf /etc/nginx/sites-available/juntospororiana /etc/nginx/sites-enabled/"
 echo "   sudo rm -f /etc/nginx/sites-enabled/default"
 echo "   sudo nginx -t && sudo systemctl reload nginx"
+echo ""
+echo "E.1 Instalar OpenWA (WhatsApp gateway):"
+echo "   sudo cp ${APP_DIR}/openwa/.env.example ${APP_DIR}/openwa/.env"
+echo "   sudo -u ${APP_USER} bash -c 'cd ${APP_DIR}/openwa && nano .env   # ajustar valores'"
+echo "   sudo cp ${APP_DIR}/vps_deploy/openwa.service /etc/systemd/system/"
+echo "   sudo systemctl daemon-reload"
+echo "   sudo systemctl enable --now openwa"
+echo "   # Esperar a que arranque y luego obtener la API key:"
+echo "   sleep 20 && sudo cat ${APP_DIR}/openwa/data/.api-key"
+echo "   # Copiar esa API key al .env del proyecto FastAPI como OPENWA_API_KEY"
+echo "   # Reiniciar FastAPI para que tome la nueva config:"
+echo "   sudo systemctl restart juntospororiana"
+echo ""
+echo "E.2 Crear la sesion de WhatsApp y vincular el numero:"
+echo "   sudo -u ${APP_USER} bash ${APP_DIR}/openwa/init-session.sh"
+echo "   # Escanear el QR con el WhatsApp del negocio"
+echo "   # El SESSION_ID se imprime al final del script, agregalo al .env"
 echo ""
 echo "F. Activar HTTPS con Let's Encrypt:"
 echo "   sudo certbot --nginx -d juntospororiana.online -d www.juntospororiana.online"

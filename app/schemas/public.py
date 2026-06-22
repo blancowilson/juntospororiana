@@ -7,6 +7,7 @@ class DonacionIn(BaseModel):
     monto_reportado: float = Field(..., gt=0)
     metodo_pago: str
     referencia: str
+    telefono: Optional[str] = None  # WhatsApp (opcional)
 
 class ReservaTicketIn(BaseModel):
     nombre: str = Field(..., min_length=2)

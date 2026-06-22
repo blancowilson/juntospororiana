@@ -1,0 +1,41 @@
+{% if estado.conectado %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-ON"></span>
+        <h4 class="mb-0 text-success fw-bold">Conectado</h4>
+    </div>
+    <ul class="list-unstyled small mb-0">
+        <li class="mb-2"><i class="fa-solid fa-phone text-muted me-2"></i><strong>Numero:</strong> {{ estado.phone or '-' }}</li>
+        {% if estado.push_name %}<li class="mb-2"><i class="fa-solid fa-user text-muted me-2"></i><strong>Nombre:</strong> {{ estado.push_name }}</li>{% endif %}
+        {% if estado.platform %}<li class="mb-2"><i class="fa-solid fa-microchip text-muted me-2"></i><strong>Plataforma:</strong> {{ estado.platform }}</li>{% endif %}
+    </ul>
+{% elif estado.status == 'SCAN_QR' %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-OFF"></span>
+        <h4 class="mb-0 text-warning fw-bold">Esperando escaneo de QR</h4>
+    </div>
+    <p class="text-muted small mb-0">Escanea el QR con tu WhatsApp para vincular.</p>
+{% elif estado.status == 'INITIALIZING' or estado.status == 'CONNECTING' %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
+        <h4 class="mb-0 text-warning fw-bold">Iniciando...</h4>
+    </div>
+    <p class="text-muted small mb-0">Espera unos segundos.</p>
+{% elif estado.status == 'NOT_FOUND' %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-ERROR"></span>
+        <h4 class="mb-0 text-danger fw-bold">Sesion no existe</h4>
+    </div>
+    <p class="text-muted small mb-0">{{ estado.error or 'Pulsa "Iniciar sesion" para crearla.' }}</p>
+{% elif estado.status == 'OFFLINE' %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-ERROR"></span>
+        <h4 class="mb-0 text-danger fw-bold">OpenWA no responde</h4>
+    </div>
+    <p class="text-muted small mb-0">{{ estado.error or 'Revisa que el contenedor Docker este corriendo.' }}</p>
+{% else %}
+    <div class="d-flex align-items-center mb-3">
+        <span class="status-dot status-OFF"></span>
+        <h4 class="mb-0 text-warning fw-bold">{{ estado.status or 'Desconocido' }}</h4>
+    </div>
+    {% if estado.error %}<p class="text-muted small mb-0">{{ estado.error }}</p>{% endif %}
+{% endif %}

@@ -50,7 +50,7 @@
             </div>
             <h1 class="display-4 fw-extrabold hero-title mb-3">Ayúdanos a sanar a Oriana</h1>
             <p class="lead mb-4 max-w-xl mx-auto px-2 text-white-50" style="font-size: 1.15rem; line-height: 1.7; font-weight: 500; max-width: 850px;">
-                Nuestra meta de recaudación es de <strong>${{ "{:,.0f}".format(campana.meta_total) }}</strong> para cubrir la colocación de un catéter, exámenes especiales (ecos, endoscopia, tomografía), preparación pre-operatoria y una posible segunda intervención. Como creyentes en Dios, confiamos en su restauración completa y damos este paso de fe agradeciendo de corazón tu valioso apoyo. ¡Cada aporte nos acerca más a la meta!
+                Buscamos recaudar <strong>$2,750</strong> para la colocación de un catéter, exámenes especiales (ecos, endoscopia, tomografía) y su preparación operatoria. Damos este paso de fe confiando en Dios y agradeciendo tu apoyo. <strong>Te invitamos a ver el video completo para conocer su historia y cómo colaborar.</strong> ¡Cada grano de arena cuenta!
             </p>
             
             <div class="row justify-content-center mb-5">
@@ -229,16 +229,19 @@
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-sm-6">
-                                    <select class="form-select rounded-3" name="metodo_pago" required>
-                                        <option value="">Método de Pago...</option>
-                                        <option value="PagoMovil">Pago Móvil</option>
-                                        <option value="PayPal">PayPal</option>
-                                        <option value="Binance">Binance Pay</option>
-                                    </select>
+                                    <input type="tel" class="form-control rounded-3" name="telefono" placeholder="WhatsApp (ej. 4141234567)" pattern="[0-9+\s\-()]{7,20}" title="Solo numeros, con o sin codigo de pais">
                                 </div>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control rounded-3" name="referencia" placeholder="Referencia" required>
                                 </div>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-select rounded-3" name="metodo_pago" required>
+                                    <option value="">Método de Pago...</option>
+                                    <option value="PagoMovil">Pago Móvil</option>
+                                    <option value="PayPal">PayPal</option>
+                                    <option value="Binance">Binance Pay</option>
+                                </select>
                             </div>
                             <div class="mb-2">
                                 <textarea class="form-control rounded-3" name="mensaje_apoyo" placeholder="Déjale un mensaje a Oriana (Opcional)" rows="2"></textarea>
@@ -525,6 +528,11 @@
                         </div>
 
                         <p class="text-muted small">Ingresa los datos del pago para verificar y procesar tus boletos:</p>
+                        
+                        <div class="alert alert-warning border-0 bg-warning-subtle text-dark-emphasis small rounded-3 p-3 mb-3 text-start">
+                            <p class="mb-1 fw-bold text-dark"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Asignación Temporal</p>
+                            <p class="mb-0 small">Ten en cuenta que la asignación de los números de ticket es <strong>temporal</strong>. Te confirmaremos de forma definitiva por tu número de <strong>WhatsApp</strong> registrado en cuanto hagamos la verificación manual de tu aporte.</p>
+                        </div>
                         
                         <form id="raffle-purchase-form"
                               hx-post="/ticket/comprar-aleatorio"

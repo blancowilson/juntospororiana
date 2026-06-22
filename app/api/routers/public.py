@@ -1,3 +1,4 @@
+import logging
 import random
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse
@@ -9,6 +10,10 @@ from datetime import datetime, timezone
 from app.db.session import get_db
 from app.models.all_models import Campana, Rifas, Tickets, Aportantes
 from app.schemas.public import DonacionIn, ReservaTicketIn
+from app.services import whatsapp as wa
+from app.services import crypto
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -171,15 +176,22 @@ async def comprar_tickets_aleatorios(
             status_code=400
         )
 
-    # 2. Registrar el Aportante
+    # 2. Registrar el Aportante (cifrando los datos sensibles)
+    nombre_c = crypto.cifrar(reserva_data.nombre)
+    cedula_c = crypto.cifrar(reserva_data.cedula)
+    telefono_c = crypto.cifrar(reserva_data.telefono)
+    referencia_c = crypto.cifrar(reserva_data.referencia)
     nuevo_aportante = Aportantes(
-        nombre=reserva_data.nombre,
-        cedula=reserva_data.cedula,
-        telefono=reserva_data.telefono,
+        nombre=nombre_c,
+        cedula=cedula_c,
+        telefono=telefono_c,
         monto_reportado=reserva_data.monto_reportado,
         moneda="USD" if reserva_data.metodo_pago in ["Zelle", "Binance", "PayPal", "Paypal"] else "BS",
         metodo_pago=reserva_data.metodo_pago,
-        referencia=reserva_data.referencia,
+        referencia=referencia_c,
+        cedula_hash=crypto.hash_busqueda(reserva_data.cedula),
+        telefono_hash=crypto.hash_busqueda(reserva_data.telefono),
+        referencia_hash=crypto.hash_busqueda(reserva_data.referencia),
         tipo_aporte="Rifa"
     )
     db.add(nuevo_aportante)
@@ -188,16 +200,30 @@ async def comprar_tickets_aleatorios(
     # 3. Asignar los tickets al aportante
     numeros_asignados = []
     precio_unitario = float(rifa.precio_ticket_usd) if nuevo_aportante.moneda == "USD" else float(rifa.precio_ticket_bs)
-    
+
     for ticket in tickets_disponibles:
         ticket.estado = "Reservado"
         ticket.reservado_en = datetime.now(timezone.utc)
         ticket.aportante_id = nuevo_aportante.id
-        ticket.referencia_pago = reserva_data.referencia
+        ticket.referencia_pago = crypto.cifrar(reserva_data.referencia)
+        ticket.referencia_pago_hash = crypto.hash_busqueda(reserva_data.referencia)
         ticket.monto_reportado = precio_unitario
         numeros_asignados.append(f"{ticket.numero:04d}") # Formatear ej: "0607"
 
     db.commit()
+
+    # Notificacion WhatsApp: revision manual de la rifa
+    try:
+        wa.notificar_recepcion_tickets(
+            telefono=reserva_data.telefono,
+            nombre=reserva_data.nombre,
+            cantidad=reserva_data.cantidad,
+            numeros=numeros_asignados,
+            monto=float(reserva_data.monto_reportado),
+            moneda=nuevo_aportante.moneda,
+        )
+    except Exception as e:
+        logger.error(f"Error enviando WhatsApp de compra de tickets: {e}")
 
     # Generar la respuesta HTML del modal exitoso
     numeros_html = "".join([f'<div class="col-6 col-sm-4 mb-2"><span class="badge bg-light text-dark border p-2 w-100 fs-5 fw-bold">{n}</span></div>' for n in numeros_asignados])
@@ -207,15 +233,20 @@ async def comprar_tickets_aleatorios(
         <div class="mb-3">
             <span class="fs-1">🎉</span>
         </div>
-        <h4 class="fw-bold text-success">¡Compra exitosa!</h4>
-        <p class="text-muted">Tu pago ha sido registrado y tus boletos están reservados correctamente.</p>
+        <h4 class="fw-bold text-success">¡Reporte de Compra Recibido!</h4>
+        <p class="text-muted">Tus boletos han sido apartados correctamente en nuestro sistema.</p>
         
-        <h5 class="mt-4 fw-bold">Números asignados:</h5>
+        <h5 class="mt-4 fw-bold text-dark">Números reservados:</h5>
         <div class="row justify-content-center my-3">
             {numeros_html}
         </div>
 
-        <button type="button" class="btn btn-success px-4 mt-3 fw-bold rounded-pill" onclick="window.location.reload()">Finalizar</button>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark-emphasis small rounded-3 p-3 my-3 text-start">
+            <p class="mb-1 fw-bold text-dark"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Asignación Temporal</p>
+            <p class="mb-0 small">Ten en cuenta que la asignación de estos números es <strong>temporal</strong>. Una vez que validemos la efectividad de tu pago, te enviaremos la confirmación definitiva con tus tickets oficiales directamente a tu número de WhatsApp registrado.</p>
+        </div>
+
+        <button type="button" class="btn btn-primary-grad px-5 py-2.5 fw-bold rounded-pill" onclick="window.location.reload()">Entendido / Finalizar</button>
     </div>
     """
     return HTMLResponse(html_response)
@@ -227,6 +258,7 @@ async def aportar_directo(
     monto_reportado: float = Form(...),
     metodo_pago: str = Form(...),
     referencia: str = Form(...),
+    telefono: str = Form(None),
     mensaje_apoyo: str = Form(None),
     captcha: str = Form(...),
     website: str = Form(None),  # honeypot - debe estar vacio
@@ -249,22 +281,40 @@ async def aportar_directo(
             mensaje_apoyo=mensaje_apoyo,
             monto_reportado=monto_reportado,
             metodo_pago=metodo_pago,
-            referencia=referencia
+            referencia=referencia,
+            telefono=telefono,
         )
     except Exception as e:
         return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=400)
 
     nuevo_aportante = Aportantes(
-        nombre=donacion_data.nombre,
+        nombre=crypto.cifrar(donacion_data.nombre),
+        telefono=crypto.cifrar(donacion_data.telefono),
         mensaje_apoyo=donacion_data.mensaje_apoyo,
         monto_reportado=donacion_data.monto_reportado,
         moneda="USD",
         metodo_pago=donacion_data.metodo_pago,
-        referencia=donacion_data.referencia,
+        referencia=crypto.cifrar(donacion_data.referencia),
+        telefono_hash=crypto.hash_busqueda(donacion_data.telefono),
+        referencia_hash=crypto.hash_busqueda(donacion_data.referencia),
         tipo_aporte="Donacion"
     )
     db.add(nuevo_aportante)
     db.commit()
+    db.refresh(nuevo_aportante)
+
+    # Notificacion WhatsApp (no bloquea la respuesta si falla)
+    if donacion_data.telefono:
+        try:
+            wa.notificar_donacion(
+                telefono=donacion_data.telefono,
+                nombre=donacion_data.nombre,
+                monto=float(donacion_data.monto_reportado),
+                moneda="USD",
+                mensaje_apoyo=donacion_data.mensaje_apoyo,
+            )
+        except Exception as e:
+            logger.error(f"Error enviando WhatsApp de donacion: {e}")
 
     # Obtener campaña activa para los límites de meta y recaudación manual
     campana = db.execute(select(Campana).where(Campana.activa == True)).scalar_one_or_none()

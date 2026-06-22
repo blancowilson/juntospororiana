@@ -93,6 +93,15 @@
                             <a class="nav-link active" href="/admin/"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="/admin/whatsapp"><i class="fa-brands fa-whatsapp me-2"></i> WhatsApp
+                                {% if wa_status and wa_status.conectado %}
+                                    <span class="badge bg-success float-end mt-1" style="font-size: 0.6rem;">ON</span>
+                                {% elif wa_status and wa_status.configurado %}
+                                    <span class="badge bg-warning float-end mt-1" style="font-size: 0.6rem;">OFF</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="/" target="_blank"><i class="fa-solid fa-globe me-2"></i> Ver Página Web</a>
                         </li>
                         <li class="nav-item">
@@ -220,8 +229,16 @@
                                         <small class="text-black-50 x-small">{{ aporte.fecha_aporte.strftime('%Y-%m-%d %H:%M') }}</small>
                                     </td>
                                     <td>
-                                        <div><span class="badge bg-light text-dark">{{ 'V-' if (aporte.cedula and not aporte.cedula.startswith('V-') and not aporte.cedula.startswith('E-')) else '' }}{{ aporte.cedula if aporte.cedula else 'N/A' }}</span></div>
-                                        <small class="text-muted">{{ aporte.telefono if aporte.telefono else 'N/A' }}</small>
+                                        {% if aporte.cedula %}
+                                        <div><span class="badge bg-light text-dark border" title="Datos protegidos: cedula y telefono se muestran enmascarados"><i class="fa-solid fa-shield-halved text-success me-1"></i>{{ aporte.cedula }}</span></div>
+                                        {% else %}
+                                        <div><span class="badge bg-light text-muted">N/A</span></div>
+                                        {% endif %}
+                                        {% if aporte.telefono %}
+                                        <small class="text-muted"><i class="fa-brands fa-whatsapp text-success me-1"></i>{{ aporte.telefono }}</small>
+                                        {% else %}
+                                        <small class="text-muted">Sin telefono</small>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         <span class="fw-bold text-dark">
@@ -230,7 +247,7 @@
                                     </td>
                                     <td>
                                         <div><span class="badge badge-info-custom">{{ aporte.metodo_pago }}</span></div>
-                                        <small class="text-muted fw-mono">Ref: {{ aporte.referencia if aporte.referencia else 'N/A' }}</small>
+                                        <small class="text-muted fw-mono" title="Referencia enmascarada"><i class="fa-solid fa-shield-halved text-success me-1"></i>Ref: {{ aporte.referencia if aporte.referencia else 'N/A' }}</small>
                                     </td>
                                     <td>
                                         {% if aporte.tipo_aporte == 'Donacion' %}

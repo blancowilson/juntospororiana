@@ -16,6 +16,22 @@ from app.core.config import settings
 
 # Configuración de logging para el scheduler
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Aviso al arrancar si el cifrado de PII no esta configurado
+from app.services import crypto as _crypto
+_crypto_status = _crypto.estado()
+if not _crypto_status["encryption_ready"]:
+    logger.warning(
+        "============================================================\n"
+        "  CIFRADO DE PII NO CONFIGURADO\n"
+        "  FERNET_KEY o SEARCH_HMAC_KEY vacias en .env\n"
+        "  Los datos se guardaran y mostraran EN PLANO.\n"
+        "  Ejecuta: python scripts/migrate_encrypt_data.py\n"
+        "============================================================"
+    )
+else:
+    logger.info("Cifrado de PII activo (Fernet + HMAC).")
 
 # 1. Crear las tablas en la BD (para MVP, aunque en pro se usa Alembic)
 Base.metadata.create_all(bind=engine)
@@ -87,16 +103,39 @@ app.include_router(admin_router)
 # Endpoint de health check para el sistema de monitoreo
 @app.get("/health")
 def health_check():
-    """Verifica el estado de la aplicacion y la conexion a la BD."""
+    """Verifica el estado de la aplicacion, la BD, el cifrado y OpenWA."""
+    from app.services import crypto as _crypto
+    from app.services import openwa_admin as _wa
+
+    db_ok = True
+    db_detail = "ok"
     try:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-        return {"status": "ok", "database": "ok"}
     except Exception as e:
-        return JSONResponse(
-            status_code=503,
-            content={"status": "error", "database": "down", "detail": str(e)}
-        )
+        db_ok = False
+        db_detail = str(e)
+
+    crypto_status = _crypto.estado()
+    wa_status = _wa.estado_sesion() if settings.OPENWA_ENABLED else {"configurado": False, "conectado": False}
+
+    body = {
+        "status": "ok" if db_ok else "degraded",
+        "database": "ok" if db_ok else "down",
+        "database_detail": db_detail if not db_ok else None,
+        "encryption": crypto_status,
+        "whatsapp": {
+            "enabled": settings.OPENWA_ENABLED,
+            "configurado": wa_status.get("configurado", False),
+            "conectado": wa_status.get("conectado", False),
+            "status": wa_status.get("status"),
+            "phone": wa_status.get("phone"),
+        },
+    }
+    return JSONResponse(
+        status_code=200 if db_ok else 503,
+        content=body,
+    )
 
 if __name__ == "__main__":
     import uvicorn
