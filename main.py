@@ -2,6 +2,8 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.core.scheduler import liberar_reservas_vencidas
@@ -22,9 +24,9 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(liberar_reservas_vencidas, 'interval', minutes=1)
     scheduler.start()
     logging.info("Scheduler de liberación de tickets iniciado.")
-    
+
     yield
-    
+
     # Teardown
     scheduler.shutdown()
     logging.info("Scheduler detenido.")
@@ -37,6 +39,20 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Incluir los routers
 app.include_router(public_router)
 app.include_router(admin_router)
+
+# Endpoint de health check para el sistema de monitoreo
+@app.get("/health")
+def health_check():
+    """Verifica el estado de la aplicacion y la conexion a la BD."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "ok"}
+    except Exception as e:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "database": "down", "detail": str(e)}
+        )
 
 if __name__ == "__main__":
     import uvicorn
