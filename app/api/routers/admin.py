@@ -187,6 +187,7 @@ async def admin_panel_view(request: Request, db: Session = Depends(get_db)):
 
         recaudacion_rifa = db.scalar(
             select(func.sum(Rifas.precio_ticket_usd))
+            .select_from(Tickets)
             .join(Rifas, Tickets.rifa_id == Rifas.id)
             .where(Tickets.estado == "Pagado")
         ) or 0.0
@@ -292,6 +293,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     total_pagados = db.scalar(select(func.count(Tickets.id)).where(Tickets.estado == "Pagado")) or 0
     recaudacion_rifa = db.scalar(
         select(func.sum(Rifas.precio_ticket_usd))
+        .select_from(Tickets)
         .join(Rifas, Tickets.rifa_id == Rifas.id)
         .where(Tickets.estado == "Pagado")
     ) or 0.0
