@@ -67,10 +67,23 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
     # 2. Obtener rifa activa
     rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
 
-    # 3. Obtener últimos 30 aportantes
-    aportantes = db.execute(
-        select(Aportantes).order_by(desc(Aportantes.fecha_aporte)).limit(30)
-    ).scalars().all()
+    # 3. Obtener últimos 30 aportantes activos (donaciones o rifas con boletos reservados/pagados)
+    from sqlalchemy import or_, exists
+    stmt_aportantes = (
+        select(Aportantes)
+        .where(
+            or_(
+                Aportantes.tipo_aporte == "Donacion",
+                exists().where(
+                    (Tickets.aportante_id == Aportantes.id) & 
+                    (Tickets.estado.in_(["Reservado", "Pagado"]))
+                )
+            )
+        )
+        .order_by(desc(Aportantes.fecha_aporte))
+        .limit(30)
+    )
+    aportantes = db.execute(stmt_aportantes).scalars().all()
 
     # Contar boletos disponibles
     from sqlalchemy import func
@@ -85,11 +98,33 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
     if rifa and float(rifa.precio_ticket_usd) > 0:
         tasa = float(rifa.precio_ticket_bs) / float(rifa.precio_ticket_usd)
 
+    # Solo sumar donaciones directas o compras de rifas que estén confirmadas ("Pagado")
     recaudado_usd = db.scalar(
-        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "USD")
+        select(func.sum(Aportantes.monto_reportado))
+        .where(
+            Aportantes.moneda == "USD",
+            or_(
+                Aportantes.tipo_aporte == "Donacion",
+                exists().where(
+                    (Tickets.aportante_id == Aportantes.id) & 
+                    (Tickets.estado == "Pagado")
+                )
+            )
+        )
     ) or 0.0
+
     recaudado_bs = db.scalar(
-        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "BS")
+        select(func.sum(Aportantes.monto_reportado))
+        .where(
+            Aportantes.moneda == "BS",
+            or_(
+                Aportantes.tipo_aporte == "Donacion",
+                exists().where(
+                    (Tickets.aportante_id == Aportantes.id) & 
+                    (Tickets.estado == "Pagado")
+                )
+            )
+        )
     ) or 0.0
 
     recaudado_aportes = float(recaudado_usd) + (float(recaudado_bs) / tasa)

@@ -112,17 +112,11 @@
                     <div class="px-2">
                         <h6 class="text-uppercase text-xs text-muted mb-3 font-semibold" style="font-size: 0.75rem;">Mantenimiento</h6>
                         <button class="btn btn-outline-warning w-100 btn-sm mb-2 text-start rounded-3" 
-                                hx-post="/admin/reversar/todos" 
-                                hx-confirm="¿Seguro que quieres liberar todos los tickets no pagados de inmediato?"
-                                hx-swap="none"
-                                hx-on::after-request="alert('Todas las reservas pendientes de confirmación han sido liberadas.'); window.location.reload();">
+                                onclick="if(confirm('¿Seguro que quieres liberar todos los tickets no pagados de inmediato?')) liberarReservas()">
                             <i class="fa-solid fa-rotate-left me-1"></i> Liberar Reservas
                         </button>
                         <button class="btn btn-outline-danger w-100 btn-sm text-start rounded-3" 
-                                hx-post="/admin/reset-db" 
-                                hx-confirm="⚠️ ATENCIÓN: Esto borrará permanentemente todos los aportes, lotes de conciliación y pondrá los 1000 tickets disponibles de nuevo. ¿Estás absolutamente seguro?"
-                                hx-swap="none"
-                                hx-on::after-request="alert('Base de datos reiniciada con éxito.'); window.location.reload();">
+                                onclick="if(confirm('⚠️ ATENCIÓN: Esto borrará permanentemente todos los aportes, lotes de conciliación y pondrá los 1000 tickets disponibles de nuevo. ¿Estás absolutamente seguro?')) reiniciarDB()">
                             <i class="fa-solid fa-trash-can me-1"></i> Reiniciar Base de Datos
                         </button>
                     </div>
@@ -355,6 +349,38 @@
                 }
             }
         });
+
+        async function liberarReservas() {
+            try {
+                const res = await fetch("/admin/reversar/todos", { method: "POST" });
+                if (res.ok) {
+                    const data = await res.json();
+                    alert(data.message || 'Todas las reservas pendientes de confirmación han sido liberadas.');
+                    window.location.reload();
+                } else {
+                    const err = await res.text();
+                    alert("Error al liberar reservas: " + err);
+                }
+            } catch (e) {
+                alert("Error de red: " + e.message);
+            }
+        }
+
+        async function reiniciarDB() {
+            try {
+                const res = await fetch("/admin/reset-db", { method: "POST" });
+                if (res.ok) {
+                    const data = await res.json();
+                    alert(data.message || 'Base de datos reiniciada con éxito.');
+                    window.location.reload();
+                } else {
+                    const err = await res.text();
+                    alert("Error al reiniciar base de datos: " + err);
+                }
+            } catch (e) {
+                alert("Error de red: " + e.message);
+            }
+        }
     </script>
 </body>
 </html>
