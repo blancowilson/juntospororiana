@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juntos por Oriana</title>
+    <title>Juntos por Oriana - Campaña Médica</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body class="bg-light">
+<body>
 
     <!-- CONFIGURACIÓN MANUAL RÁPIDA PARA EL HOSTING ESTÁTICO -->
     <script>
@@ -33,145 +33,289 @@
         const RIFA_FECHA = "15 de Agosto 2026";
     </script>
 
-    <!-- A. Hero Section -->
-    <header class="hero-section text-center text-white py-5 mb-5 shadow">
+    <!-- Navegación Sticky Glassmorphic -->
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top navbar-light shadow-xs-soft py-3">
         <div class="container">
-            <h1 class="display-3 fw-bold mb-2">Juntos por Oriana</h1>
-            <p class="lead mb-3 max-w-xl mx-auto px-2" style="font-size: 1.15rem; line-height: 1.6; font-weight: 500;">
-                Nuestra meta de recaudación es de <strong>$2,600</strong> para cubrir la colocación de un catéter, exámenes especiales (tomografías), preparación pre-operatoria y una posible segunda intervención. Como creyentes en Dios, confiamos en que pueda ser sanada con o sin tantos procedimientos, pero damos este paso de fe con tu valioso apoyo. ¡Cada aporte cuenta!
+            <a class="navbar-brand fw-bold fs-4 text-dark d-flex align-items-center" href="#">
+                <i class="fa-solid fa-heart text-danger me-2 animate-pulse"></i>Juntos por Oriana
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav gap-2 align-items-center">
+                    <li class="nav-item"><a class="nav-link px-3" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#pagos">Métodos de Pago</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#pote">El Pote de Esperanza</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#rifa">Rifa Solidaria</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-primary-grad rounded-pill px-4 py-2 text-white shadow-sm" href="#pagos">Colaborar Ahora</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- A. Hero Section -->
+    <header class="hero-section text-center text-white shadow">
+        <div class="container">
+            <div class="badge bg-danger rounded-pill px-3 py-2 mb-3 text-uppercase fw-bold shadow-sm" style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                <i class="fa-solid fa-heart me-1"></i> Campaña Médica de Emergencia
+            </div>
+            <h1 class="display-4 fw-extrabold hero-title mb-3">Ayúdanos a sanar a Oriana</h1>
+            <p class="lead mb-4 max-w-xl mx-auto px-2 text-white-50" style="font-size: 1.15rem; line-height: 1.7; font-weight: 500; max-width: 850px;">
+                Nuestra meta de recaudación es de <strong>$2,600</strong> para cubrir la colocación de un catéter, exámenes especiales (tomografías), preparación pre-operatoria y una posible segunda intervención. Como creyentes en Dios, confiamos en que pueda ser sanada, pero damos este paso de fe con tu valioso apoyo. ¡Cada aporte cuenta!
             </p>
-            <div class="row justify-content-center mb-4">
-                <div class="col-12 col-md-8">
-                    <div class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden border border-3 border-white">
-                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="Video de la Campaña" allowfullscreen></iframe>
+            
+            <div class="row justify-content-center mb-5">
+                <div class="col-12 col-md-9 col-lg-8">
+                    <div class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden border border-4 border-white-50">
+                        <iframe src="https://www.youtube.com/embed/bns2i2EjYcw?rel=0" title="Video de la Campaña" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
+
             <!-- Compartir por Redes Sociales -->
             <div class="mt-2">
-                <p class="mb-2 text-white-50 fw-semibold x-small"><i class="fa-solid fa-share-nodes me-2"></i>¡AYÚDANOS COMPARTIENDO LA CAMPAÑA!</p>
-                <div class="d-flex justify-content-center gap-2 flex-wrap">
-                    <a id="share-whatsapp" href="#" class="btn btn-success rounded-pill px-3 shadow-3xs text-white btn-sm fw-semibold" target="_blank">
-                        <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
+                <p class="mb-3 text-white-50 fw-semibold text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.05em;"><i class="fa-solid fa-share-nodes me-2"></i>¡Ayúdanos compartiendo la campaña!</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a id="share-whatsapp" href="#" class="btn btn-success rounded-pill px-4 py-2 shadow-sm text-white fw-semibold" target="_blank">
+                        <i class="fa-brands fa-whatsapp me-2"></i> WhatsApp
                     </a>
-                    <a id="share-facebook" href="#" class="btn btn-primary rounded-pill px-3 shadow-3xs text-white btn-sm fw-semibold" style="background-color: #1877F2;" target="_blank">
-                        <i class="fa-brands fa-facebook-f me-1"></i> Facebook
+                    <a id="share-facebook" href="#" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm text-white fw-semibold" style="background-color: #1877F2; border-color: #1877F2;" target="_blank">
+                        <i class="fa-brands fa-facebook-f me-2"></i> Facebook
                     </a>
-                    <a id="share-telegram" href="#" class="btn btn-info rounded-pill px-3 shadow-3xs text-white btn-sm fw-semibold" style="background-color: #0088cc;" target="_blank">
-                        <i class="fa-brands fa-telegram me-1"></i> Telegram
+                    <a id="share-telegram" href="#" class="btn btn-info rounded-pill px-4 py-2 shadow-sm text-white fw-semibold" style="background-color: #0088cc; border-color: #0088cc;" target="_blank">
+                        <i class="fa-brands fa-telegram me-2"></i> Telegram
                     </a>
-                    <button onclick="copyCampaignLink()" class="btn btn-light rounded-pill px-3 shadow-3xs btn-sm fw-semibold text-dark">
-                        <i class="fa-solid fa-link me-1"></i> Copiar Link (Instagram)
+                    <button onclick="copyCampaignLink()" class="btn btn-light rounded-pill px-4 py-2 shadow-sm fw-semibold text-dark border-0">
+                        <i class="fa-solid fa-link me-2"></i> Enlace (Instagram)
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="container">
+    <div class="container py-5">
         <!-- B. Tarjetas de Pago -->
-        <section class="mb-5">
-            <h2 class="text-center fw-bold mb-4">Métodos de Pago</h2>
+        <section id="pagos" class="mb-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-dark mb-2">Métodos de Pago</h2>
+                <p class="text-muted">Elige el método de tu preferencia para realizar tu aporte directo o comprar tus boletos</p>
+            </div>
             <div class="row g-4 justify-content-center">
+                <!-- Pago Móvil -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
-                        <div class="payment-icon text-primary mb-2"><i class="fa-solid fa-mobile-screen-button fa-2x"></i></div>
-                        <h5 class="fw-bold text-dark">Pago Móvil</h5>
-                        <p class="mb-1 text-muted small"><strong>Banco Mercantil</strong></p>
-                        <p class="mb-1 text-muted small">Tlf: 0424-4697562</p>
-                        <p class="mb-1 text-muted small">CI: 18.240.284</p>
-                        <p class="mb-0 text-muted small">Titular: Oriana Torres</p>
+                    <div class="card h-100 shadow-xs-soft text-center p-4 border-0 payment-card">
+                        <div class="mx-auto payment-icon bg-rose-soft mb-3">
+                            <i class="fa-solid fa-mobile-screen-button fa-xl"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-3">Pago Móvil</h5>
+                        
+                        <div class="px-2 text-start">
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-light">
+                                <span class="text-muted small">Banco:</span>
+                                <span class="fw-bold text-dark small">Banco Mercantil</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-light">
+                                <span class="text-muted small">Teléfono:</span>
+                                <span class="fw-bold text-dark small">
+                                    0424-4697562
+                                    <button onclick="copyToClipboard('04244697562', 'tlf-s', this)" class="copy-btn" title="Copiar Teléfono"><i class="fa-regular fa-copy"></i></button>
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-light">
+                                <span class="text-muted small">Cédula:</span>
+                                <span class="fw-bold text-dark small">
+                                    18.240.284
+                                    <button onclick="copyToClipboard('18240284', 'ci-s', this)" class="copy-btn" title="Copiar Cédula"><i class="fa-regular fa-copy"></i></button>
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Titular:</span>
+                                <span class="fw-bold text-dark small text-end">Oriana Torres</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- PayPal -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
-                        <div class="payment-icon text-info mb-2"><i class="fa-brands fa-paypal fa-2x"></i></div>
-                        <h5 class="fw-bold text-dark">PayPal</h5>
-                        <p class="mb-1 mt-3 text-muted"><strong>blancowilson83@gmail.com</strong></p>
-                        <p class="mb-0 text-muted small">Aportes directos en USD</p>
+                    <div class="card h-100 shadow-xs-soft text-center p-4 border-0 payment-card">
+                        <div class="mx-auto payment-icon bg-teal-soft mb-3">
+                            <i class="fa-brands fa-paypal fa-xl"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-3">PayPal</h5>
+                        
+                        <div class="my-auto px-2 text-center">
+                            <p class="mb-2 text-muted small fw-semibold">Correo Electrónico:</p>
+                            <div class="bg-light p-2 rounded-3 mb-2 d-flex align-items-center justify-content-center gap-1 border">
+                                <strong class="small text-dark text-break" style="font-size: 0.9rem;">blancowilson83@gmail.com</strong>
+                                <button onclick="copyToClipboard('blancowilson83@gmail.com', 'paypal-s', this)" class="copy-btn" title="Copiar Correo"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                            <span class="badge bg-teal-soft text-teal px-3 py-2 rounded-pill x-small-tag fw-semibold"><i class="fa-solid fa-dollar-sign me-1"></i>Aportes directos en USD</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Binance Pay -->
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm text-center p-3 border-0 rounded-4 payment-card">
-                        <div class="payment-icon text-warning mb-2"><i class="fa-solid fa-qrcode fa-2x"></i></div>
-                        <h5 class="fw-bold text-dark">Binance Pay</h5>
-                        <img src="qr-binance.png" alt="QR Binance" class="img-fluid my-2 mx-auto" style="max-width: 100px; display: block;" onerror="this.src='https://placehold.co/100x100?text=QR+Binance'">
-                        <p class="mb-1 text-muted small">Pay ID: <strong>10061357</strong></p>
-                        <p class="mb-0 text-muted small">User ID: <strong>User-bef80</strong></p>
+                    <div class="card h-100 shadow-xs-soft text-center p-4 border-0 payment-card">
+                        <div class="mx-auto payment-icon bg-amber-soft mb-3">
+                            <i class="fa-solid fa-qrcode fa-xl"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-2">Binance Pay</h5>
+                        
+                        <img src="qr-binance.png" alt="QR Binance" class="img-fluid my-2 mx-auto shadow-sm border rounded-3 p-1" style="max-width: 100px; display: block;" onerror="this.src='https://placehold.co/100x100?text=QR+Binance'">
+                        
+                        <div class="mt-3 px-2 text-start">
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-light">
+                                <span class="text-muted small">Pay ID:</span>
+                                <span class="fw-bold text-dark small">
+                                    10061357
+                                    <button onclick="copyToClipboard('10061357', 'payid-s', this)" class="copy-btn" title="Copiar Pay ID"><i class="fa-regular fa-copy"></i></button>
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">User ID:</span>
+                                <span class="fw-bold text-dark small">
+                                    User-bef80
+                                    <button onclick="copyToClipboard('User-bef80', 'userid-s', this)" class="copy-btn" title="Copiar User ID"><i class="fa-regular fa-copy"></i></button>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- C. El Pote de la Esperanza y Formulario -->
-        <section class="row mb-5 align-items-stretch">
+        <section id="pote" class="row mb-5 align-items-stretch g-4">
+            <!-- Pote de Esperanza -->
             <div class="col-12 col-md-6 mb-4 mb-md-0">
                 <div class="glass-pote p-4 h-100 position-relative d-flex flex-column justify-content-between rounded-4">
                     <div>
-                        <h3 class="fw-bold text-white text-center mb-4">El Pote de Esperanza</h3>
+                        <div class="text-center mb-4">
+                            <h3 class="fw-bold text-dark">El Pote de Esperanza</h3>
+                            <p class="text-muted small">Fondo general acumulado gracias a los donantes solidarios</p>
+                        </div>
                         
-                        <div id="pote-progress-container">
-                            <div class="progress mb-3" style="height: 30px; border-radius: 15px; background-color: rgba(255,255,255,0.25);">
-                                <div id="pote-bar" class="progress-bar bg-success progress-bar-striped progress-bar-animated rounded-pill fw-bold" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    0%
+                        <div class="pote-bg-card text-center">
+                            <span class="d-block text-uppercase text-white-50 x-small-tag mb-2 fw-semibold"><i class="fa-solid fa-chart-line me-1"></i>Estado de Recaudación</span>
+                            
+                            <div id="pote-progress-container" class="my-3">
+                                <div class="custom-progress mb-3">
+                                    <div id="pote-bar" class="custom-progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress-heart">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between text-white fw-bold mb-0 px-1" style="font-size: 0.95rem;">
+                                    <span>Recaudado: $<span id="pote-recaudado-text">0.00</span></span>
+                                    <span>Meta: $<span id="pote-meta-text">0.00</span></span>
                                 </div>
                             </div>
                             
-                            <div class="d-flex justify-content-between text-white fw-bold mb-4">
-                                <span>Recaudado: $<span id="pote-recaudado-text">0.00</span></span>
-                                <span>Meta: $<span id="pote-meta-text">0.00</span></span>
+                            <div id="pote-percentage-badge" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill mt-2 fw-semibold">
+                                <i class="fa-solid fa-hands-holding-circle me-1 animate-pulse"></i> ¡0% alcanzado!
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white p-3 rounded-4 shadow-sm mt-3">
-                        <h5 class="text-center mb-3 text-dark fw-bold">Reportar Donación Directa</h5>
-                        <!-- Formulario redirige directamente a WhatsApp -->
+                    <!-- Formulario Reportar Donación -->
+                    <div class="bg-white p-3 rounded-4 border shadow-xs-soft mt-3">
+                        <h5 class="text-center mb-3 text-dark fw-bold"><i class="fa-solid fa-receipt text-danger me-2"></i>Reportar Donación Directa</h5>
                         <form id="donation-form" onsubmit="submitDonationToWhatsapp(event)">
-                            <div class="mb-2">
-                                <input type="text" class="form-control rounded-3" id="don-nombre" placeholder="Tu Nombre" required>
+                            <div class="row g-2 mb-2">
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control rounded-3" id="don-nombre" placeholder="Tu Nombre" required>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="number" step="0.01" class="form-control rounded-3" id="don-monto" placeholder="Monto (USD)" required>
+                                </div>
                             </div>
-                            <div class="mb-2">
-                                <input type="number" step="0.01" class="form-control rounded-3" id="don-monto" placeholder="Monto (USD)" required>
-                            </div>
-                            <div class="mb-2">
-                                <select class="form-select rounded-3" id="don-metodo" required>
-                                    <option value="">Método de Pago...</option>
-                                    <option value="Pago Móvil">Pago Móvil</option>
-                                    <option value="PayPal">PayPal</option>
-                                    <option value="Binance">Binance Pay</option>
-                                </select>
-                            </div>
-                            <div class="mb-2">
-                                <input type="text" class="form-control rounded-3" id="don-referencia" placeholder="Referencia" required>
+                            <div class="row g-2 mb-2">
+                                <div class="col-sm-6">
+                                    <select class="form-select rounded-3" id="don-metodo" required>
+                                        <option value="">Método de Pago...</option>
+                                        <option value="Pago Móvil">Pago Móvil</option>
+                                        <option value="PayPal">PayPal</option>
+                                        <option value="Binance">Binance Pay</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control rounded-3" id="don-referencia" placeholder="Referencia" required>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <textarea class="form-control rounded-3" id="don-mensaje" placeholder="Déjale un mensaje a Oriana (Opcional)" rows="2"></textarea>
                             </div>
-                            <button class="btn btn-success w-100 fw-bold shadow-sm rounded-pill"><i class="fa-brands fa-whatsapp me-2"></i>Enviar Donación por WhatsApp</button>
+                            <button class="btn btn-secondary-grad w-100 fw-bold shadow-sm rounded-pill py-2.5">
+                                <i class="fa-brands fa-whatsapp me-2"></i>Reportar por WhatsApp
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
 
+            <!-- Corazones Solidarios (Listado Simulador) -->
             <div class="col-12 col-md-6">
-                <div class="card h-100 shadow-sm border-0 rounded-4 bg-white">
-                    <div class="card-header bg-white border-0 pt-4 pb-0">
-                        <h4 class="fw-bold text-dark text-center">Corazones Solidarios</h4>
+                <div class="card h-100 shadow-xs-soft border-0 rounded-4 bg-white">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                        <h4 class="fw-bold text-dark"><i class="fa-solid fa-hand-holding-heart text-danger me-2"></i>Corazones Solidarios</h4>
+                        <p class="text-muted small">Personas maravillosas que ya han brindado su apoyo</p>
                     </div>
-                    <div class="card-body">
-                        <!-- Lista simulada de aportantes del Pote -->
-                        <div id="lista-aportantes" class="p-2" style="overflow-y: auto; max-height: 430px;">
-                            <div class="p-3 mb-2 border-bottom">
-                                <h6 class="mb-1 text-primary fw-bold">Juan Pérez ha donado!</h6>
-                                <p class="mb-0 fst-italic text-muted small">"Con mucha fe en que todo saldrá excelente. ¡Fuerza Oriana!"</p>
+                    <div class="card-body px-3">
+                        <div id="lista-aportantes" class="p-2" style="overflow-y: auto; max-height: 440px;">
+                            <!-- Juan Pérez -->
+                            <div class="p-3 mb-3 border-0 donor-card shadow-xs-soft">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-circle" style="background: linear-gradient(135deg, #EC4899, #8B5CF6);">
+                                        JP
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 text-dark fw-bold">Juan Pérez</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            <i class="fa-regular fa-clock me-1"></i>Hace unas horas
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="bubble-message">
+                                    <p class="mb-0 fst-italic text-muted small">"Con mucha fe en que todo saldrá excelente. ¡Fuerza Oriana!"</p>
+                                </div>
                             </div>
-                            <div class="p-3 mb-2 border-bottom">
-                                <h6 class="mb-1 text-primary fw-bold">María Rodríguez ha donado!</h6>
-                                <p class="mb-0 fst-italic text-muted small">"Dios tiene el control de tu salud. Bendiciones."</p>
+                            <!-- María Rodríguez -->
+                            <div class="p-3 mb-3 border-0 donor-card shadow-xs-soft">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-circle" style="background: linear-gradient(135deg, #F59E0B, #EF4444);">
+                                        MR
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 text-dark fw-bold">María Rodríguez</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            <i class="fa-regular fa-clock me-1"></i>Ayer
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="bubble-message">
+                                    <p class="mb-0 fst-italic text-muted small">"Dios tiene el control de tu salud. Bendiciones."</p>
+                                </div>
                             </div>
-                            <div class="p-3 mb-2 border-bottom">
-                                <h6 class="mb-1 text-primary fw-bold">Pedro Gómez ha donado!</h6>
+                            <!-- Pedro Gómez -->
+                            <div class="p-3 mb-3 border-0 donor-card shadow-xs-soft">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-circle" style="background: linear-gradient(135deg, #10B981, #059669);">
+                                        PG
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 text-dark fw-bold">Pedro Gómez</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            <i class="fa-regular fa-clock me-1"></i>Hace 2 días
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -180,70 +324,80 @@
         </section>
 
         <!-- D. Compra Simplificada de Rifa -->
-        <section class="mb-5 bg-white p-4 rounded-4 shadow-sm border-top border-4 border-success">
-            <div class="row align-items-center">
-                <div class="col-lg-7 mb-4 mb-lg-0">
-                    <h2 class="fw-bold text-dark mb-2" id="rifa-titulo-val">Cargando Rifa...</h2>
-                    <p class="text-muted"><i class="fa-regular fa-calendar-days me-2"></i>Sorteo: <span id="rifa-fecha-val">-</span></p>
-                    <div class="d-flex align-items-center gap-3 my-3">
-                        <div class="px-3 py-2 bg-light border rounded-3 text-center">
-                            <span class="d-block text-uppercase text-muted x-small">Precio Boleto</span>
-                            <strong class="fs-4 text-success">Bs. <span id="rifa-precio-bs-val">0.00</span></strong>
+        <section id="rifa" class="mb-5 bg-white p-4 rounded-4 shadow-sm raffle-banner">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size: 0.65rem;">Campaña Solidaria</span>
+                        <span class="text-muted small"><i class="fa-solid fa-ticket text-danger me-1"></i>Rifa Activa</span>
+                    </div>
+                    <h2 class="fw-extrabold text-dark mb-3" id="rifa-titulo-val">Cargando Rifa...</h2>
+                    <p class="text-muted"><i class="fa-regular fa-calendar-days text-danger me-2"></i>Sorteo: <strong id="rifa-fecha-val">-</strong></p>
+                    
+                    <div class="d-flex align-items-center gap-3 my-4">
+                        <div class="px-4 py-2.5 bg-light border rounded-3 text-center">
+                            <span class="d-block text-uppercase text-muted x-small-tag fw-semibold">Boleto en Bs.</span>
+                            <strong class="fs-4 text-teal">Bs. <span id="rifa-precio-bs-val">0.00</span></strong>
                         </div>
-                        <div class="px-3 py-2 bg-light border rounded-3 text-center">
-                            <span class="d-block text-uppercase text-muted x-small">Equivalente</span>
+                        <div class="px-4 py-2.5 bg-light border rounded-3 text-center">
+                            <span class="d-block text-uppercase text-muted x-small-tag fw-semibold">Equivalente USD</span>
                             <strong class="fs-4 text-secondary">$<span id="rifa-precio-usd-val">0.00</span></strong>
                         </div>
                     </div>
-                    <div class="alert alert-light border-start border-4 border-info py-2 my-3">
-                        <p class="mb-0 fw-semibold text-info small"><i class="fa-solid fa-circle-info me-2"></i>Lotería de Referencia: <span id="rifa-loteria-val">-</span></p>
+
+                    <div class="alert alert-info border-0 bg-light-subtle rounded-3 py-3 my-3 border-start border-4 border-info">
+                        <p class="mb-1 fw-bold text-info"><i class="fa-solid fa-circle-info me-2"></i>Lotería de Referencia: <span id="rifa-loteria-val">-</span></p>
                     </div>
-                    <div class="mt-4">
-                        <h5 class="fw-bold text-dark"><i class="fa-solid fa-trophy text-warning me-2"></i>Premio a sortear:</h5>
-                        <p class="lead text-success fw-semibold" id="rifa-premio-val">-</p>
+
+                    <div class="mt-4 p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                        <div class="fs-2 text-warning"><i class="fa-solid fa-trophy"></i></div>
+                        <div>
+                            <span class="d-block text-muted x-small-tag fw-semibold text-uppercase">Premio a sortear:</span>
+                            <h5 class="text-success fw-bold mb-0" id="rifa-premio-val">-</h5>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-lg-5">
-                    <div class="p-3 border rounded-4 bg-light shadow-2xs">
-                        <h5 class="fw-bold text-dark text-center mb-3">Elige la cantidad de boletos</h5>
+                    <div class="p-4 border rounded-4 bg-light shadow-2xs border-white">
+                        <h5 class="fw-bold text-dark text-center mb-4"><i class="fa-solid fa-calculator text-danger me-2"></i>Elige la Cantidad</h5>
                         
                         <!-- Botones de Selección Rápida -->
-                        <div class="row g-2 mb-3">
+                        <div class="row g-2 mb-4">
                             <div class="col-4">
-                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(1)">1</button>
+                                <button type="button" class="btn qty-btn w-100 shadow-sm" onclick="setQuantity(1)">1</button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="btn btn-success w-100 py-3 fw-bold qty-btn position-relative shadow-3xs" onclick="setQuantity(2)">
+                                <button type="button" class="btn qty-btn active w-100 shadow-sm position-relative" onclick="setQuantity(2)">
                                     2
-                                    <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger x-small" style="font-size: 8px;">Popular</span>
+                                    <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger shadow-sm" style="font-size: 8px;">Popular</span>
                                 </button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(5)">5</button>
+                                <button type="button" class="btn qty-btn w-100 shadow-sm" onclick="setQuantity(5)">5</button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(10)">10</button>
+                                <button type="button" class="btn qty-btn w-100 shadow-sm" onclick="setQuantity(10)">10</button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(25)">25</button>
+                                <button type="button" class="btn qty-btn w-100 shadow-sm" onclick="setQuantity(25)">25</button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="btn btn-outline-success w-100 py-3 fw-bold qty-btn shadow-3xs" onclick="setQuantity(50)">50</button>
+                                <button type="button" class="btn qty-btn w-100 shadow-sm" onclick="setQuantity(50)">50</button>
                             </div>
                         </div>
 
                         <!-- Selector manual +/- -->
-                        <div class="d-flex align-items-center justify-content-center gap-2 mb-4 bg-white border p-2 rounded-3 shadow-3xs">
-                            <button class="btn btn-light rounded-circle shadow-3xs" style="width: 40px; height: 40px;" onclick="adjustQuantity(-1)"><i class="fa-solid fa-minus"></i></button>
-                            <input type="number" id="ticket-qty-input" class="form-control text-center border-0 fw-bold fs-5" style="width: 80px;" value="2" min="1" onchange="updateTotalAmount()">
-                            <button class="btn btn-light rounded-circle shadow-3xs" style="width: 40px; height: 40px;" onclick="adjustQuantity(1)"><i class="fa-solid fa-plus"></i></button>
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-4 bg-white border p-2 rounded-3 shadow-sm">
+                            <button class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" onclick="adjustQuantity(-1)"><i class="fa-solid fa-minus"></i></button>
+                            <input type="number" id="ticket-qty-input" class="form-control text-center border-0 fw-bold fs-5 p-0" style="width: 80px;" value="2" min="1" onchange="updateTotalAmount()">
+                            <button class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" onclick="adjustQuantity(1)"><i class="fa-solid fa-plus"></i></button>
                         </div>
 
                         <!-- Botón Participar -->
-                        <button class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow d-flex justify-content-between align-items-center px-4" onclick="openCheckoutModal()">
-                            <span>Participar</span>
-                            <span id="participate-total-btn" class="fs-5">Bs. 360.00</span>
+                        <button class="btn btn-primary-grad w-100 py-3 fw-bold rounded-3 shadow d-flex justify-content-between align-items-center px-4" onclick="openCheckoutModal()">
+                            <span>Participar en la Rifa</span>
+                            <span id="participate-total-btn" class="fs-5 fw-bold">Bs. 0.00</span>
                         </button>
                     </div>
                 </div>
@@ -251,7 +405,7 @@
         </section>
     </div>
 
-    <!-- E. Modal de Proceso de Compra (WIZARD REDIRIGE A WHATSAPP AL FINAL) -->
+    <!-- E. Modal de Proceso de Compra (WIZARD) -->
     <div class="modal fade" id="checkoutModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow">
@@ -260,73 +414,130 @@
                     <!-- PASO 1: Verificar Monto -->
                     <div id="wizard-step-1" class="p-4 d-block">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="modal-title fw-bold text-dark" id="checkoutModalLabel">Verifica el monto antes de continuar</h5>
+                            <h5 class="modal-title fw-bold text-dark" id="checkoutModalLabel"><i class="fa-solid fa-circle-check text-success me-2"></i>Verifica tu Solicitud</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="py-3">
+                        
+                        <!-- Step Indicator -->
+                        <div class="step-indicator px-2">
+                            <div class="step-dot active" id="step-dot-1">1</div>
+                            <div class="step-dot" id="step-dot-2">2</div>
+                            <div class="step-dot" id="step-dot-3">3</div>
+                            <div class="step-dot" id="step-dot-4">4</div>
+                        </div>
+                        <div class="d-flex justify-content-between px-1 mb-4 text-muted x-small" style="font-size: 0.65rem;">
+                            <span class="fw-bold text-dark">1. Verificar</span>
+                            <span class="fw-semibold">2. Pagar</span>
+                            <span class="fw-semibold">3. Reportar</span>
+                            <span class="fw-semibold">4. Listo</span>
+                        </div>
+
+                        <div class="py-3 px-3 bg-light rounded-3 border">
                             <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                                <span class="text-muted">Precio por boleto:</span>
-                                <span class="fw-semibold">Bs. <span id="price-per-ticket-text">0.00</span></span>
+                                <span class="text-muted small">Precio por boleto:</span>
+                                <span class="fw-bold small">Bs. <span id="price-per-ticket-text">0.00</span></span>
                             </div>
                             <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                                <span class="text-muted">Cantidad de boletos:</span>
-                                <span class="fw-semibold" id="qty-text">0</span>
+                                <span class="text-muted small">Cantidad de boletos:</span>
+                                <span class="fw-bold small" id="qty-text">0</span>
                             </div>
                             <div class="d-flex justify-content-between pt-2">
-                                <span class="fw-bold text-dark fs-5">Total a pagar:</span>
-                                <span class="fw-bold text-success fs-5">Bs. <span id="total-to-pay-text">0.00</span></span>
+                                <span class="fw-bold text-dark fs-6">Total a pagar:</span>
+                                <span class="fw-bold text-teal fs-6">Bs. <span id="total-to-pay-text">0.00</span></span>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-3 mt-4" onclick="goToStep(2)">Continuar</button>
+                        <button type="button" class="btn btn-primary-grad w-100 py-3 fw-bold rounded-3 mt-4" onclick="goToStep(2)">
+                            Confirmar y Continuar <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
                     </div>
 
                     <!-- PASO 2: Realiza el Pago -->
                     <div id="wizard-step-2" class="p-4 d-none">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="modal-title fw-bold text-dark">Realiza el pago</h5>
+                            <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-paper-plane text-danger me-2"></i>Realiza el Pago</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <p class="text-muted small">Sigue las instrucciones para completar tu pago móvil:</p>
+                        
+                        <!-- Step Indicator -->
+                        <div class="step-indicator px-2">
+                            <div class="step-dot completed" id="step-dot-1"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-dot active" id="step-dot-2">2</div>
+                            <div class="step-dot" id="step-dot-3">3</div>
+                            <div class="step-dot" id="step-dot-4">4</div>
+                        </div>
+                        <div class="d-flex justify-content-between px-1 mb-4 text-muted x-small" style="font-size: 0.65rem;">
+                            <span class="fw-semibold">1. Verificar</span>
+                            <span class="fw-bold text-dark">2. Pagar</span>
+                            <span class="fw-semibold">3. Reportar</span>
+                            <span class="fw-semibold">4. Listo</span>
+                        </div>
+
+                        <p class="text-muted small">Realiza el pago móvil desde tu banco con los siguientes datos:</p>
                         <div class="bg-light p-3 rounded-3 mb-4 border">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Banco:</span>
-                                <span class="fw-semibold text-end">Mercantil (Pago Móvil)</span>
+                            <div class="d-flex justify-content-between mb-2 pb-1 border-bottom border-white">
+                                <span class="text-muted small">Banco:</span>
+                                <span class="fw-bold small text-dark">Banco Mercantil</span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Teléfono:</span>
-                                <span class="fw-semibold">04244697562</span>
+                            <div class="d-flex justify-content-between mb-2 pb-1 border-bottom border-white">
+                                <span class="text-muted small">Teléfono:</span>
+                                <span class="fw-bold small text-dark">
+                                    0424-4697562
+                                    <button onclick="copyToClipboard('04244697562', 'tlf-w-s', this)" class="copy-btn"><i class="fa-regular fa-copy"></i></button>
+                                </span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Cédula:</span>
-                                <span class="fw-semibold">18240284</span>
+                            <div class="d-flex justify-content-between mb-2 pb-1 border-bottom border-white">
+                                <span class="text-muted small">Cédula:</span>
+                                <span class="fw-bold small text-dark">
+                                    18.240.284
+                                    <button onclick="copyToClipboard('18240284', 'ci-w-s', this)" class="copy-btn"><i class="fa-regular fa-copy"></i></button>
+                                </span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Titular:</span>
-                                <span class="fw-semibold">Oriana Torres</span>
+                            <div class="d-flex justify-content-between mb-2 pb-1 border-bottom border-white">
+                                <span class="text-muted small">Titular:</span>
+                                <span class="fw-bold small text-dark">Oriana Torres</span>
                             </div>
                             <div class="d-flex justify-content-between border-top pt-2">
-                                <span class="fw-bold text-dark">Monto:</span>
-                                <span class="fw-bold text-success">Bs. <span id="payment-amount-text">0.00</span></span>
+                                <span class="fw-bold text-dark">Monto a Transferir:</span>
+                                <span class="fw-bold text-teal">Bs. <span id="payment-amount-text">0.00</span></span>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-3" onclick="goToStep(3)">Reportar pago</button>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary w-50 py-3 fw-bold rounded-3" onclick="goToStep(1)"><i class="fa-solid fa-arrow-left me-2"></i>Volver</button>
+                            <button type="button" class="btn btn-primary-grad w-50 py-3 fw-bold rounded-3" onclick="goToStep(3)">Reportar Pago</button>
+                        </div>
                     </div>
 
                     <!-- PASO 3: Reportar Pago (Formulario) -->
                     <div id="wizard-step-3" class="p-4 d-none">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="modal-title fw-bold text-dark">Reportar pago</h5>
+                            <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Reportar Pago</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <p class="text-muted small">Completa los datos de tu transacción para enviarla por WhatsApp:</p>
+                        
+                        <!-- Step Indicator -->
+                        <div class="step-indicator px-2">
+                            <div class="step-dot completed" id="step-dot-1"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-dot completed" id="step-dot-2"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-dot active" id="step-dot-3">3</div>
+                            <div class="step-dot" id="step-dot-4">4</div>
+                        </div>
+                        <div class="d-flex justify-content-between px-1 mb-4 text-muted x-small" style="font-size: 0.65rem;">
+                            <span class="fw-semibold">1. Verificar</span>
+                            <span class="fw-semibold">2. Pagar</span>
+                            <span class="fw-bold text-dark">3. Reportar</span>
+                            <span class="fw-semibold">4. Listo</span>
+                        </div>
+
+                        <p class="text-muted small">Completa tus datos para enviar el reporte de pago por WhatsApp:</p>
                         
                         <form id="raffle-purchase-form" onsubmit="submitRaffleToWhatsapp(event)">
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-semibold">Nombre Completo</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">Nombre Completo</label>
                                 <input type="text" id="raf-nombre" class="form-control rounded-3" placeholder="Nombre completo" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-semibold">Banco Emisor</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">Banco Emisor</label>
                                 <select id="raf-banco" class="form-select rounded-3" required>
                                     <option value="">Selecciona tu banco...</option>
                                     <option value="BANCO DE VENEZUELA">BANCO DE VENEZUELA</option>
@@ -335,24 +546,26 @@
                                     <option value="PROVINCIAL">BBVA PROVINCIAL</option>
                                     <option value="BNC">BNC</option>
                                     <option value="BANCARIBE">BANCARIBE</option>
+                                    <option value="BANCO DEL TESORO">BANCO DEL TESORO</option>
+                                    <option value="BANCO ACTIVO">BANCO ACTIVO</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-semibold">Número de Referencia (Últimos 4-6 dígitos)</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">Número de Referencia (Últimos 4-6 dígitos)</label>
                                 <input type="text" id="raf-referencia" class="form-control rounded-3" placeholder="Ej. 41324" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-semibold">Cédula del Titular</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">Cédula del Titular</label>
                                 <input type="text" id="raf-cedula" class="form-control rounded-3" placeholder="V-12345678" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-semibold">Teléfono asociado</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">Teléfono asociado</label>
                                 <input type="text" id="raf-telefono" class="form-control rounded-3" placeholder="Ej. 04121234567" required>
                             </div>
 
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-outline-secondary w-50 py-3 fw-bold rounded-3" onclick="goToStep(2)"><i class="fa-solid fa-arrow-left me-2"></i>Volver</button>
-                                <button type="submit" class="btn btn-success w-50 py-3 fw-bold rounded-3"><i class="fa-brands fa-whatsapp me-2"></i>Reportar</button>
+                                <button type="submit" class="btn btn-primary-grad w-50 py-3 fw-bold rounded-3"><i class="fa-brands fa-whatsapp me-2"></i>Reportar Pago</button>
                             </div>
                         </form>
                     </div>
@@ -364,7 +577,7 @@
                         </div>
                         <h4 class="fw-bold text-success">¡Reporte Enviado!</h4>
                         <p class="text-muted">Tu reporte fue enviado a nuestro WhatsApp. Una vez verificado el pago móvil, te enviaremos tus números asignados por ese mismo medio.</p>
-                        <button type="button" class="btn btn-success px-4 mt-3 fw-bold rounded-pill" data-bs-dismiss="modal" onclick="window.location.reload()">Finalizar</button>
+                        <button type="button" class="btn btn-primary-grad px-4 mt-3 fw-bold rounded-pill" data-bs-dismiss="modal" onclick="window.location.reload()">Finalizar</button>
                     </div>
 
                 </div>
@@ -375,7 +588,7 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- LÓGICA DE CONTROL DEL SITIO ESTÁTICO -->
+    <!-- Lógica de Selección y Modal para Sitio Estático -->
     <script>
         let checkoutModalObj = null;
 
@@ -393,12 +606,15 @@
             // Inyectar datos del pote
             document.getElementById("pote-recaudado-text").innerText = RECAUDADO_MANUAL.toFixed(2);
             document.getElementById("pote-meta-text").innerText = META_TOTAL.toFixed(2);
+            
             let pct = (RECAUDADO_MANUAL / META_TOTAL) * 100;
             if (pct > 100) pct = 100;
+            
             const bar = document.getElementById("pote-bar");
             bar.style.width = `${pct}%`;
-            bar.innerText = `${pct.toFixed(1)}%`;
-            bar.setAttribute("aria-valuenow", pct.toFixed(1));
+            
+            const badge = document.getElementById("pote-percentage-badge");
+            badge.innerHTML = `<i class="fa-solid fa-hands-holding-circle me-1 animate-pulse"></i> ¡${pct.toFixed(1)}% de la meta alcanzada!`;
 
             // Configurar links de compartir
             const currentUrl = encodeURIComponent(window.location.href);
@@ -411,42 +627,72 @@
             updateTotalAmount();
         });
 
-        // Configurar enlaces para copiar al portapapeles
+        // Copiar enlace de campaña
         function copyCampaignLink() {
             navigator.clipboard.writeText(window.location.href).then(() => {
-                alert("¡Enlace copiado al portapapeles! Compártelo en tus redes, estados de WhatsApp o biografía de Instagram.");
+                alert("¡Enlace de la campaña copiado al portapapeles! Ya puedes compartirlo en tus historias/biografía de Instagram o estados de WhatsApp.");
             }).catch(err => {
                 console.error("Error al copiar link: ", err);
             });
         }
 
-        // Configurar cantidades de tickets
+        // Copiar texto al portapapeles con feedback visual
+        function copyToClipboard(text, elementId, btnElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btnElement.classList.add('copied');
+                
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-success position-absolute start-50 translate-middle-x px-2 py-1 shadow';
+                badge.style.top = '-25px';
+                badge.style.fontSize = '10px';
+                badge.style.zIndex = '100';
+                badge.innerText = '¡Copiado!';
+                
+                btnElement.parentNode.appendChild(badge);
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.classList.remove('copied');
+                    badge.remove();
+                }, 2000);
+            }).catch(err => {
+                console.error("Error al copiar: ", err);
+            });
+        }
+
+        // Configurar cantidad al hacer clic en botones rápidos
         function setQuantity(qty) {
             const input = document.getElementById("ticket-qty-input");
             input.value = qty;
             
             document.querySelectorAll(".qty-btn").forEach(btn => {
-                btn.classList.remove("btn-success");
-                btn.classList.add("btn-outline-success");
+                btn.classList.remove("active");
             });
-            event.target.classList.remove("btn-outline-success");
-            event.target.classList.add("btn-success");
+            event.target.classList.add("active");
 
             updateTotalAmount();
         }
 
+        // Ajustar cantidad +/-
         function adjustQuantity(amount) {
             const input = document.getElementById("ticket-qty-input");
             let val = parseInt(input.value) + amount;
             if (val < 1) val = 1;
             input.value = val;
             
+            document.querySelectorAll(".qty-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+
             updateTotalAmount();
         }
 
+        // Actualizar visualizaciones del total
         function updateTotalAmount() {
             const input = document.getElementById("ticket-qty-input");
-            let val = parseInt(input.value) || 1;
+            let val = parseInt(input.value) || 2;
             if (val < 1) val = 1;
             input.value = val;
 
@@ -460,11 +706,13 @@
             document.getElementById("payment-amount-text").innerText = total.toFixed(2);
         }
 
+        // Abrir modal
         function openCheckoutModal() {
             goToStep(1);
             checkoutModalObj.show();
         }
 
+        // Cambiar pasos del Wizard del Modal
         function goToStep(step) {
             document.getElementById("wizard-step-1").className = "p-4 d-none";
             document.getElementById("wizard-step-2").className = "p-4 d-none";
@@ -472,6 +720,23 @@
             document.getElementById("wizard-step-4").className = "p-4 d-none";
 
             document.getElementById(`wizard-step-${step}`).className = "p-4 d-block";
+
+            // Actualizar dots de la barra de progreso
+            for (let i = 1; i <= 4; i++) {
+                const dot = document.getElementById(`step-dot-${i}`);
+                if (dot) {
+                    dot.classList.remove("active", "completed");
+                    if (i < step) {
+                        dot.classList.add("completed");
+                        dot.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    } else if (i === step) {
+                        dot.classList.add("active");
+                        dot.innerHTML = i;
+                    } else {
+                        dot.innerHTML = i;
+                    }
+                }
+            }
         }
 
         // REDIRECCIONES DE FORMULARIO A WHATSAPP
@@ -497,11 +762,11 @@
 
         function submitRaffleToWhatsapp(event) {
             event.preventDefault();
-            const nombre = document.getElementById("raf-nombre").value;
-            const banco = document.getElementById("raf-banco").value;
-            const referencia = document.getElementById("raf-referencia").value;
-            const cedula = document.getElementById("raf-cedula").value;
-            const telefono = document.getElementById("raf-telefono").value;
+            const nombre = document.querySelector("#wizard-step-3 #raf-nombre").value;
+            const banco = document.querySelector("#wizard-step-3 #raf-banco").value;
+            const referencia = document.querySelector("#wizard-step-3 #raf-referencia").value;
+            const cedula = document.querySelector("#wizard-step-3 #raf-cedula").value;
+            const telefono = document.querySelector("#wizard-step-3 #raf-telefono").value;
             
             const qty = document.getElementById("qty-text").innerText;
             const total = document.getElementById("total-to-pay-text").innerText;

@@ -1,3 +1,4 @@
+import random
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -12,16 +13,55 @@ from app.schemas.public import DonacionIn, ReservaTicketIn
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+# Limite de tiempo de validez de un captcha en segundos
+CAPTCHA_TTL = 600  # 10 minutos
+
+def _generar_captcha(request: Request) -> str:
+    """Genera una pregunta matematica simple y guarda la respuesta en la sesion."""
+    n1 = random.randint(2, 9)
+    n2 = random.randint(1, 9)
+    pregunta = f"{n1} + {n2}"
+    respuesta = n1 + n2
+    request.session["captcha_q"] = pregunta
+    request.session["captcha_a"] = respuesta
+    request.session["captcha_t"] = int(datetime.now(timezone.utc).timestamp())
+    return pregunta
+
+def _validar_captcha(request: Request, respuesta_usuario: str) -> tuple[bool, str]:
+    """Valida la respuesta del captcha contra la almacenada en sesion.
+    Retorna (es_valido, mensaje_error).
+    """
+    esperada = request.session.get("captcha_a")
+    timestamp = request.session.get("captcha_t")
+    if esperada is None or timestamp is None:
+        return False, "Captcha expirado. Recarga la pagina."
+    # Verificar expiracion
+    ahora = int(datetime.now(timezone.utc).timestamp())
+    if ahora - timestamp > CAPTCHA_TTL:
+        return False, "Captcha expirado. Recarga la pagina."
+    # Verificar respuesta
+    try:
+        usuario = int(str(respuesta_usuario).strip())
+    except (ValueError, TypeError):
+        return False, "Captcha invalido."
+    if usuario != esperada:
+        return False, "Captcha incorrecto. Intenta de nuevo."
+    return True, ""
+
+def _es_bot(website: str | None) -> bool:
+    """Honeypot: si el campo oculto esta lleno, es un bot."""
+    return bool(website and website.strip())
+
 @router.get("/", response_class=HTMLResponse)
 async def landing_page(request: Request, db: Session = Depends(get_db)):
     # 1. Obtener campaña activa
     campana = db.execute(select(Campana).where(Campana.activa == True)).scalar_one_or_none()
     if not campana:
         campana = Campana(meta_total=2600.00, recaudado_manual=0.00)
-    
+
     # 2. Obtener rifa activa
     rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
-    
+
     # 3. Obtener últimos 30 aportantes
     aportantes = db.execute(
         select(Aportantes).order_by(desc(Aportantes.fecha_aporte)).limit(30)
@@ -35,9 +75,23 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
             select(func.count(Tickets.id)).where(Tickets.rifa_id == rifa.id, Tickets.estado == "Disponible")
         ) or 0
 
-    # Calcular total recaudado (Manual + Aportantes registrados en BD)
-    recaudado_aportes = db.scalar(select(func.sum(Aportantes.monto_reportado))) or 0.0
-    total_recaudado = float(campana.recaudado_manual) + float(recaudado_aportes)
+    # Calcular total recaudado (Manual + Aportantes registrados en BD convertidos a USD si están en BS)
+    tasa = 800.0
+    if rifa and float(rifa.precio_ticket_usd) > 0:
+        tasa = float(rifa.precio_ticket_bs) / float(rifa.precio_ticket_usd)
+
+    recaudado_usd = db.scalar(
+        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "USD")
+    ) or 0.0
+    recaudado_bs = db.scalar(
+        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "BS")
+    ) or 0.0
+
+    recaudado_aportes = float(recaudado_usd) + (float(recaudado_bs) / tasa)
+    total_recaudado = float(campana.recaudado_manual) + recaudado_aportes
+
+    # Generar captcha fresco para esta carga de pagina
+    captcha_q = _generar_captcha(request)
 
     return templates.TemplateResponse(
         "index.html",
@@ -47,12 +101,14 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
             "rifa": rifa,
             "aportantes": aportantes,
             "boletos_disponibles": boletos_disponibles,
-            "total_recaudado": total_recaudado
+            "total_recaudado": total_recaudado,
+            "captcha_q": captcha_q
         }
     )
 
 @router.post("/ticket/comprar-aleatorio", response_class=HTMLResponse)
 async def comprar_tickets_aleatorios(
+    request: Request,
     cantidad: int = Form(...),
     nombre: str = Form(...),
     cedula: str = Form(...),
@@ -61,8 +117,21 @@ async def comprar_tickets_aleatorios(
     metodo_pago: str = Form(...),
     referencia: str = Form(...),
     banco_emisor: str = Form(...),
+    captcha: str = Form(...),
+    website: str = Form(None),  # honeypot - debe estar vacio
     db: Session = Depends(get_db)
 ):
+    # Anti-bot: honeypot
+    if _es_bot(website):
+        return HTMLResponse('<div class="alert alert-danger">Acceso bloqueado.</div>', status_code=400)
+    # Anti-bot: captcha
+    valido, msg = _validar_captcha(request, captcha)
+    if not valido:
+        return HTMLResponse(f'<div class="alert alert-danger">{msg}</div>', status_code=400)
+    # Consumir captcha (un solo uso)
+    request.session.pop("captcha_a", None)
+    request.session.pop("captcha_t", None)
+
     try:
         # Validación Pydantic
         reserva_data = ReservaTicketIn(
@@ -91,8 +160,9 @@ async def comprar_tickets_aleatorios(
         select(Tickets)
         .where(Tickets.rifa_id == rifa.id, Tickets.estado == "Disponible")
         .limit(reserva_data.cantidad)
-        .with_for_update()
     )
+    if db.bind.dialect.name != "sqlite":
+        stmt = stmt.with_for_update()
     tickets_disponibles = db.execute(stmt).scalars().all()
 
     if len(tickets_disponibles) < reserva_data.cantidad:
@@ -152,13 +222,27 @@ async def comprar_tickets_aleatorios(
 
 @router.post("/aportar/directo", response_class=HTMLResponse)
 async def aportar_directo(
+    request: Request,
     nombre: str = Form(...),
     monto_reportado: float = Form(...),
     metodo_pago: str = Form(...),
     referencia: str = Form(...),
     mensaje_apoyo: str = Form(None),
+    captcha: str = Form(...),
+    website: str = Form(None),  # honeypot - debe estar vacio
     db: Session = Depends(get_db)
 ):
+    # Anti-bot: honeypot
+    if _es_bot(website):
+        return HTMLResponse('<div class="alert alert-danger">Acceso bloqueado.</div>', status_code=400)
+    # Anti-bot: captcha
+    valido, msg = _validar_captcha(request, captcha)
+    if not valido:
+        return HTMLResponse(f'<div class="alert alert-danger">{msg}</div>', status_code=400)
+    # Consumir captcha (un solo uso)
+    request.session.pop("captcha_a", None)
+    request.session.pop("captcha_t", None)
+
     try:
         donacion_data = DonacionIn(
             nombre=nombre,
@@ -187,10 +271,22 @@ async def aportar_directo(
     if not campana:
         campana = Campana(meta_total=2600.00, recaudado_manual=0.00)
 
-    # Recalcular recaudación total
+    # Recalcular recaudación total (Manual + Aportantes en BD convertidos a USD si están en BS)
     from sqlalchemy import func
-    recaudado_aportes = db.scalar(select(func.sum(Aportantes.monto_reportado))) or 0.0
-    total_recaudado = float(campana.recaudado_manual) + float(recaudado_aportes)
+    rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
+    tasa = 800.0
+    if rifa and float(rifa.precio_ticket_usd) > 0:
+        tasa = float(rifa.precio_ticket_bs) / float(rifa.precio_ticket_usd)
+        
+    recaudado_usd = db.scalar(
+        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "USD")
+    ) or 0.0
+    recaudado_bs = db.scalar(
+        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "BS")
+    ) or 0.0
+    
+    recaudado_aportes = float(recaudado_usd) + (float(recaudado_bs) / tasa)
+    total_recaudado = float(campana.recaudado_manual) + recaudado_aportes
     
     porcentaje = (total_recaudado / float(campana.meta_total)) * 100
     if porcentaje > 100:

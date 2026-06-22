@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Juntos por Oriana</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .sidebar {
+            background-color: #0f172a;
+            color: #94a3b8;
+            min-height: 100vh;
+        }
+        .sidebar .nav-link {
+            color: #94a3b8;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+            transition: all 0.2s ease;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: #fff;
+            background-color: #1e293b;
+            background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        .card-stats {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-stats:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .table-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .badge-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+            font-weight: 600;
+        }
+        .badge-success-custom {
+            background-color: #dcfce7;
+            color: #15803d;
+            font-weight: 600;
+        }
+        .badge-info-custom {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+        }
+        .badge-danger-custom {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            font-weight: 600;
+        }
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
+                <div class="position-sticky">
+                    <div class="d-flex align-items-center mb-4 px-2">
+                        <span class="fs-4 fw-bold text-white"><i class="fa-solid fa-heart-pulse text-danger me-2"></i>Admin JPO</span>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/" target="_blank"><i class="fa-solid fa-globe me-2"></i> Ver Página Web</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/docs" target="_blank"><i class="fa-solid fa-circle-info me-2"></i> Documentación API</a>
+                        </li>
+                    </ul>
+                    <hr class="text-secondary my-4">
+                    <div class="px-2">
+                        <h6 class="text-uppercase text-xs text-muted mb-3 font-semibold" style="font-size: 0.75rem;">Mantenimiento</h6>
+                        <button class="btn btn-outline-warning w-100 btn-sm mb-2 text-start rounded-3" 
+                                hx-post="/admin/reversar/todos" 
+                                hx-confirm="¿Seguro que quieres liberar todos los tickets no pagados de inmediato?"
+                                hx-swap="none"
+                                hx-on::after-request="alert('Todas las reservas pendientes de confirmación han sido liberadas.'); window.location.reload();">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Liberar Reservas
+                        </button>
+                        <button class="btn btn-outline-danger w-100 btn-sm text-start rounded-3" 
+                                hx-post="/admin/reset-db" 
+                                hx-confirm="⚠️ ATENCIÓN: Esto borrará permanentemente todos los aportes, lotes de conciliación y pondrá los 1000 tickets disponibles de nuevo. ¿Estás absolutamente seguro?"
+                                hx-swap="none"
+                                hx-on::after-request="alert('Base de datos reiniciada con éxito.'); window.location.reload();">
+                            <i class="fa-solid fa-trash-can me-1"></i> Reiniciar Base de Datos
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h2 fw-bold">Panel de Control</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <span class="badge bg-light text-dark border p-2 rounded-3"><i class="fa-solid fa-clock me-1 text-primary"></i> Campaña Activa</span>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card card-stats p-3 bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-medium">Tickets Reservados</span>
+                                    <h3 class="fw-bold mt-1 text-warning">{{ stats.tickets_reservados }}</h3>
+                                </div>
+                                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-4"><i class="fa-solid fa-ticket fa-lg"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card card-stats p-3 bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-medium">Tickets Pagados</span>
+                                    <h3 class="fw-bold mt-1 text-success">{{ stats.tickets_pagados }}</h3>
+                                </div>
+                                <div class="p-3 bg-success bg-opacity-10 text-success rounded-4"><i class="fa-solid fa-ticket-simple fa-lg"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card card-stats p-3 bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-medium">Recaudación Rifa</span>
+                                    <h3 class="fw-bold mt-1 text-primary">${{ "%.2f"|format(stats.recaudacion_rifa_usd) }}</h3>
+                                </div>
+                                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-4"><i class="fa-solid fa-trophy fa-lg"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card card-stats p-3 bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-medium">Total Recaudado</span>
+                                    <h3 class="fw-bold mt-1 text-dark">${{ "%.2f"|format(stats.total_recaudado_usd) }}</h3>
+                                </div>
+                                <div class="p-3 bg-dark bg-opacity-10 text-dark rounded-4"><i class="fa-solid fa-dollar-sign fa-lg"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conciliación Bancaria Section -->
+                <div class="table-container mb-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-file-excel text-success me-2"></i>Conciliación Bancaria Masiva (Excel / CSV)</h5>
+                    <p class="text-muted small">Carga tu estado de cuenta bancario para conciliar los tickets reservados automáticamente de forma transaccional. Debe contener las columnas <strong>Referencia</strong> y <strong>Monto</strong>.</p>
+                    <form hx-post="/admin/conciliar/upload" hx-encoding="multipart/form-data" hx-target="#reconcile-result" class="row g-2 align-items-center">
+                        <div class="col-auto">
+                            <input type="file" name="file" class="form-control" required accept=".csv,.xlsx,.xls">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-success fw-semibold"><i class="fa-solid fa-circle-play me-1"></i> Procesar Archivo</button>
+                        </div>
+                    </form>
+                    <div id="reconcile-result" class="mt-3"></div>
+                </div>
+
+                <!-- Aportantes / Lista de Donaciones y Compras -->
+                <div class="table-container">
+                    <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-list-check text-primary me-2"></i>Listado de Contribuciones y Reportes</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Aportante</th>
+                                    <th>Identificación / Tlf</th>
+                                    <th>Monto Reportado</th>
+                                    <th>Método / Referencia</th>
+                                    <th>Tipo</th>
+                                    <th>Tickets Asignados</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for aporte in aportes %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">{{ aporte.nombre }}</div>
+                                        {% if aporte.mensaje_apoyo %}
+                                        <small class="text-muted d-block fst-italic">"{{ aporte.mensaje_apoyo }}"</small>
+                                        {% endif %}
+                                        <small class="text-black-50 x-small">{{ aporte.fecha_aporte.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        <div><span class="badge bg-light text-dark">{{ 'V-' if (aporte.cedula and not aporte.cedula.startswith('V-') and not aporte.cedula.startswith('E-')) else '' }}{{ aporte.cedula if aporte.cedula else 'N/A' }}</span></div>
+                                        <small class="text-muted">{{ aporte.telefono if aporte.telefono else 'N/A' }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-dark">
+                                            {% if aporte.moneda == 'BS' %}Bs.{% else %}${% endif %} {{ "%.2f"|format(aporte.monto_reportado) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div><span class="badge badge-info-custom">{{ aporte.metodo_pago }}</span></div>
+                                        <small class="text-muted fw-mono">Ref: {{ aporte.referencia if aporte.referencia else 'N/A' }}</small>
+                                    </td>
+                                    <td>
+                                        {% if aporte.tipo_aporte == 'Donacion' %}
+                                        <span class="badge bg-secondary">Donación Directa</span>
+                                        {% else %}
+                                        <span class="badge bg-primary">Rifa</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if aporte.tipo_aporte == 'Rifa' %}
+                                            <div class="d-flex flex-wrap gap-1" style="max-width: 250px;">
+                                                {% for ticket in aporte.tickets %}
+                                                    <span class="badge bg-light text-dark border">{{ "%03d"|format(ticket.numero) }}</span>
+                                                {% endfor %}
+                                                {% if not aporte.tickets %}
+                                                    <small class="text-danger">Ninguno (Liberados)</small>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td id="status-container-{{ aporte.id }}">
+                                        <!-- Determinar estado dinámicamente -->
+                                        {% if aporte.tipo_aporte == 'Donacion' %}
+                                            <span class="badge badge-success-custom"><i class="fa-solid fa-circle-check me-1"></i>Donación</span>
+                                        {% else %}
+                                            {% set t_estados = [] %}
+                                            {% for t in aporte.tickets %}
+                                                {% set _ = t_estados.append(t.estado) %}
+                                            {% endfor %}
+                                            {% if 'Reservado' in t_estados %}
+                                                <span class="badge badge-pending"><i class="fa-solid fa-spinner fa-spin me-1"></i>Pendiente</span>
+                                            {% elif 'Pagado' in t_estados %}
+                                                <span class="badge badge-success-custom"><i class="fa-solid fa-circle-check me-1"></i>Pagado</span>
+                                            {% else %}
+                                                <span class="badge badge-danger-custom"><i class="fa-solid fa-circle-xmark me-1"></i>Liberado</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td id="action-container-{{ aporte.id }}">
+                                        {% if aporte.tipo_aporte == 'Rifa' %}
+                                            {% set t_estados = [] %}
+                                            {% for t in aporte.tickets %}
+                                                {% set _ = t_estados.append(t.estado) %}
+                                            {% endfor %}
+                                            {% if 'Reservado' in t_estados %}
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-success" 
+                                                            hx-post="/admin/confirmar/aportante/{{ aporte.id }}"
+                                                            hx-target="#status-container-{{ aporte.id }}"
+                                                            hx-swap="innerHTML"
+                                                            hx-on::after-request="document.getElementById('action-container-{{ aporte.id }}').style.display='none';">
+                                                        Confirmar
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" 
+                                                            hx-post="/admin/reversar/aportante/{{ aporte.id }}"
+                                                            hx-target="#status-container-{{ aporte.id }}"
+                                                            hx-swap="innerHTML"
+                                                            hx-on::after-request="document.getElementById('action-container-{{ aporte.id }}').style.display='none';">
+                                                        Liberar
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not aportes %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-5 text-muted">No hay aportes registrados aún.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Manejar el resultado de la conciliación para recargar la página tras unos segundos
+        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+            if (evt.detail.target.id === 'reconcile-result') {
+                const res = evt.detail.xhr.responseText;
+                if (res.includes("filename")) {
+                    const data = JSON.parse(res);
+                    evt.detail.target.innerHTML = `
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+                            <div>
+                                <strong>¡Conciliación Completada!</strong> Archivo: ${data.filename}. 
+                                Procesados: ${data.procesados} transacciones. 
+                                Aprobados: ${data.aprobados} tickets.
+                                <br><small class="text-muted">Recargando página para actualizar estadísticas...</small>
+                            </div>
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

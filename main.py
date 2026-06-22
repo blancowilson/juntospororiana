@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy import text
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -10,6 +11,7 @@ from app.core.scheduler import liberar_reservas_vencidas
 from app.api.routers.public import router as public_router
 from app.api.routers.admin import router as admin_router
 from app.db.session import engine, Base
+from app.core.config import settings
 
 # Configuración de logging para el scheduler
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +34,9 @@ async def lifespan(app: FastAPI):
     logging.info("Scheduler detenido.")
 
 app = FastAPI(title="Juntos por Oriana", lifespan=lifespan)
+
+# Middleware de sesiones (para almacenar respuestas de captcha)
+app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY, max_age=3600)
 
 # Montar archivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")

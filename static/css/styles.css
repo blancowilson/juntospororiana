@@ -1,90 +1,431 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%); /* Rose to Pink */
+    --secondary-gradient: linear-gradient(135deg, #0d9488 0%, #10b981 100%); /* Teal to Emerald */
+    --dark-gradient: radial-gradient(circle at 0% 0%, rgba(244, 63, 94, 0.12) 0%, transparent 50%), 
+                     radial-gradient(circle at 100% 100%, rgba(13, 148, 136, 0.1) 0%, transparent 50%), 
+                     #0f172a; /* Premium Mesh Gradient */
+    --neutral-bg: #f8fafc;
+    --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04), 0 1px 3px 0 rgba(15, 23, 42, 0.02);
+    --hover-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 1px 5px 0 rgba(15, 23, 42, 0.03);
+    --rose-soft: #fff1f2;
+    --teal-soft: #f0fdfa;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+}
+
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--neutral-bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+}
+
+/* Glass Navbar */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+    transition: all 0.3s ease;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #f43f5e;
 }
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
-    border-bottom: 5px solid #0a58ca;
+    background: var(--dark-gradient);
+    padding: 7rem 0 5rem 0;
+    position: relative;
+    border-bottom: none;
 }
 
-/* Tarjetas de Pago */
+.hero-title {
+    background: linear-gradient(to right, #ffffff 30%, #fecdd3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* Payment Cards */
 .payment-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s;
-    border: 1px solid rgba(0,0,0,0.05) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    background: #ffffff;
+    border-radius: 1.25rem !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .payment-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    transform: translateY(-8px);
+    box-shadow: var(--hover-shadow) !important;
+    border-color: rgba(244, 63, 94, 0.15) !important;
+}
+
+.payment-card:hover::before {
+    opacity: 1;
 }
 
 .payment-icon {
-    opacity: 0.85;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 1.25rem;
+    transition: all 0.3s ease;
 }
 
-/* Glassmorphism - El Pote de la Esperanza */
+.payment-card:hover .payment-icon {
+    transform: scale(1.1);
+}
+
+.bg-rose-soft {
+    background-color: var(--rose-soft);
+    color: #f43f5e;
+}
+
+.bg-teal-soft {
+    background-color: var(--teal-soft);
+    color: #0d9488;
+}
+
+.bg-amber-soft {
+    background-color: #fffbeb;
+    color: #d97706;
+}
+
+/* Copy to Clipboard Styling */
+.copy-btn {
+    border: none;
+    background: none;
+    padding: 2px 6px;
+    margin-left: 6px;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.copy-btn:hover {
+    background-color: rgba(226, 232, 240, 0.6);
+    color: var(--text-primary);
+}
+
+.copy-btn.copied {
+    color: #10b981 !important;
+}
+
+.tooltip-copy {
+    position: relative;
+}
+
+/* El Pote de la Esperanza - Glassmorphism */
 .glass-pote {
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(13, 202, 240, 0.8));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 40px -20px rgba(15, 23, 42, 0.08);
 }
 
-/* Custom Scrollbar for list */
+.pote-bg-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    color: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+    margin-bottom: 1.5rem;
+}
+
+/* Sleek Progress Bar */
+.custom-progress {
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    overflow: visible;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.custom-progress-bar {
+    background: var(--secondary-gradient);
+    border-radius: 999px;
+    position: relative;
+    transition: width 1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.progress-heart {
+    position: absolute;
+    right: -10px;
+    width: 28px;
+    height: 28px;
+    background: #f43f5e;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(244, 63, 94, 0.4);
+    animation: heartPulse 1.8s infinite;
+}
+
+.progress-heart i {
+    font-size: 0.75rem;
+    color: #ffffff;
+}
+
+@keyframes heartPulse {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.12); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.12); }
+    70% { transform: scale(1); }
+}
+
+/* Corazones Solidarios Muro */
+.donor-card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    border-radius: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.03);
+}
+
+.donor-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(244, 63, 94, 0.1);
+    box-shadow: 0 4px 12px -3px rgba(15, 23, 42, 0.05);
+}
+
+.avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.bubble-message {
+    background-color: var(--neutral-bg);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-top-left-radius: 0;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(226, 232, 240, 0.4);
+    position: relative;
+}
+
+.bubble-message::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-top: 0px solid transparent;
+    border-right: 8px solid rgba(226, 232, 240, 0.4);
+    border-bottom: 8px solid transparent;
+}
+
+/* Raffle Section */
+.raffle-banner {
+    background: #ffffff;
+    border-radius: 1.5rem !important;
+    border: none !important;
+    box-shadow: 0 20px 40px -20px rgba(15, 23, 42, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.raffle-banner::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: var(--primary-gradient);
+}
+
+/* Wizard Modal & Steps */
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e2e0fc;
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.step-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e2e8f0;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    z-index: 2;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.step-dot.active {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+.step-dot.completed {
+    background: var(--secondary-gradient);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+/* Quantity Selection Buttons */
+.qty-btn {
+    border-radius: 0.75rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    background-color: #ffffff;
+    color: var(--text-primary);
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 52px;
+}
+
+.qty-btn:hover {
+    background-color: var(--rose-soft);
+    color: #f43f5e;
+    border-color: rgba(244, 63, 94, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+.qty-btn.active {
+    background: var(--primary-gradient) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 16px -4px rgba(244, 63, 94, 0.3) !important;
+}
+
+/* Inputs styling */
+.form-control, .form-select {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #cbd5e1;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12) !important;
+    border-color: #0d9488 !important;
+}
+
+/* Buttons */
+.btn-primary-grad {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-grad:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -10px rgba(244, 63, 94, 0.5);
+    color: #ffffff;
+}
+
+.btn-secondary-grad {
+    background: var(--secondary-gradient);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-grad:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -10px rgba(13, 148, 136, 0.5);
+    color: #ffffff;
+}
+
+/* Custom Scrollbar */
 #lista-aportantes::-webkit-scrollbar {
     width: 6px;
 }
 #lista-aportantes::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    border-radius: 4px;
+    background: transparent; 
 }
 #lista-aportantes::-webkit-scrollbar-thumb {
-    background: #ccc; 
-    border-radius: 4px;
+    background: #cbd5e1; 
+    border-radius: 10px;
 }
 #lista-aportantes::-webkit-scrollbar-thumb:hover {
-    background: #aaa; 
+    background: #94a3b8; 
 }
 
 /* Utility styles */
-.x-small {
-    font-size: 0.75rem;
-}
-
-.x-small-tag {
-    font-size: 0.65rem;
-}
-
 .cursor-pointer {
     cursor: pointer;
 }
-
-.shadow-2xs {
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+.shadow-xs-soft {
+    box-shadow: 0 4px 10px -3px rgba(15, 23, 42, 0.03);
 }
-
-.shadow-3xs {
-    box-shadow: 0 0.5px 1px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* Quantity Selection custom styles */
-.qty-btn {
-    font-size: 1.1rem;
-    border-radius: 12px;
-    transition: all 0.2s;
-    height: 55px;
-}
-
-.qty-btn:hover {
-    transform: scale(1.03);
-}
-
-/* Inputs styling */
-.form-control:focus, .form-select:focus {
-    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
-    border-color: #198754;
+.rounded-xl {
+    border-radius: 1.25rem !important;
 }

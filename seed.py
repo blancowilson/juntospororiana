@@ -3,9 +3,13 @@ from datetime import datetime, timedelta, timezone
 from app.db.session import SessionLocal, engine, Base
 from app.models.all_models import Campana, Rifas, Tickets
 
-def seed_database():
+def seed_database(reset: bool = False):
+    if reset:
+        print("Eliminando tablas existentes (Reset)...")
+        Base.metadata.drop_all(bind=engine)
+        
     # 1. Asegurar que las tablas existan
-    print("Creando tablas si no existen...")
+    print("Creando tablas...")
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
@@ -68,4 +72,5 @@ def seed_database():
         db.close()
 
 if __name__ == "__main__":
-    seed_database()
+    reset_db = "--reset" in sys.argv
+    seed_database(reset=reset_db)
