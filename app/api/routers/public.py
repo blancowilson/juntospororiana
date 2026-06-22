@@ -85,6 +85,15 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
     )
     aportantes = db.execute(stmt_aportantes).scalars().all()
 
+    # Decifrar nombres
+    from app.services import crypto
+    for ap in aportantes:
+        try:
+            ap.nombre_decrypted = crypto.descifrar(ap.nombre) or "Anónimo"
+        except Exception as e:
+            logger.error(f"Error descifrando nombre del aportante {ap.id}: {e}")
+            ap.nombre_decrypted = "Anónimo"
+
     # Contar boletos disponibles
     from sqlalchemy import func
     boletos_disponibles = 0
@@ -356,18 +365,39 @@ async def aportar_directo(
     if not campana:
         campana = Campana(meta_total=2750.00, recaudado_manual=0.00)
 
-    # Recalcular recaudación total (Manual + Aportantes en BD convertidos a USD si están en BS)
-    from sqlalchemy import func
+    # Recalcular recaudación total (donaciones directas + rifas pagadas)
+    from sqlalchemy import func, or_, exists
     rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
     tasa = 800.0
     if rifa and float(rifa.precio_ticket_usd) > 0:
         tasa = float(rifa.precio_ticket_bs) / float(rifa.precio_ticket_usd)
         
     recaudado_usd = db.scalar(
-        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "USD")
+        select(func.sum(Aportantes.monto_reportado))
+        .where(
+            Aportantes.moneda == "USD",
+            or_(
+                Aportantes.tipo_aporte == "Donacion",
+                exists().where(
+                    (Tickets.aportante_id == Aportantes.id) & 
+                    (Tickets.estado == "Pagado")
+                )
+            )
+        )
     ) or 0.0
+
     recaudado_bs = db.scalar(
-        select(func.sum(Aportantes.monto_reportado)).where(Aportantes.moneda == "BS")
+        select(func.sum(Aportantes.monto_reportado))
+        .where(
+            Aportantes.moneda == "BS",
+            or_(
+                Aportantes.tipo_aporte == "Donacion",
+                exists().where(
+                    (Tickets.aportante_id == Aportantes.id) & 
+                    (Tickets.estado == "Pagado")
+                )
+            )
+        )
     ) or 0.0
     
     recaudado_aportes = float(recaudado_usd) + (float(recaudado_bs) / tasa)
@@ -377,26 +407,70 @@ async def aportar_directo(
     if porcentaje > 100:
         porcentaje = 100
 
+    # Computar iniciales y gradiente para el nuevo aportante (diseño idéntico a templates/index.html)
+    nombre = donacion_data.nombre
+    names = nombre.split()
+    if len(names) > 1:
+        initials = (names[0][0] + names[1][0]).upper()
+    elif names:
+        initials = names[0][0].upper()
+    else:
+        initials = "CS"
+
+    char = nombre[0].upper() if nombre else 'A'
+    if char in 'AEIOU':
+        bg_grad = 'background: linear-gradient(135deg, #EC4899, #8B5CF6);'
+    elif char in 'BCDFG':
+        bg_grad = 'background: linear-gradient(135deg, #3B82F6, #06B6D4);'
+    elif char in 'HJKLMN':
+        bg_grad = 'background: linear-gradient(135deg, #F59E0B, #EF4444);'
+    elif char in 'PQRST':
+        bg_grad = 'background: linear-gradient(135deg, #10B981, #059669);'
+    else:
+        bg_grad = 'background: linear-gradient(135deg, #6366F1, #4F46E5);'
+
+    fecha_str = datetime.now().strftime('%Y-%m-%d %H:%M')
+
     mensaje_html = ""
     if donacion_data.mensaje_apoyo:
-        mensaje_html = f'<p class="mb-0 fst-italic text-muted">"{donacion_data.mensaje_apoyo}"</p>'
+        mensaje_html = f"""
+        <div class="bubble-message">
+            <p class="mb-0 fst-italic text-muted small">"{donacion_data.mensaje_apoyo}"</p>
+        </div>
+        """
 
     html_response = f"""
-    <div class="p-3 mb-2 border-bottom">
-        <h6 class="mb-1 text-primary">{donacion_data.nombre} ha donado!</h6>
+    <div class="p-3 mb-3 border-0 donor-card shadow-xs-soft">
+        <div class="d-flex align-items-center gap-3">
+            <div class="avatar-circle" style="{bg_grad}">
+                {initials}
+            </div>
+            <div>
+                <h6 class="mb-0 text-dark fw-bold">{donacion_data.nombre}</h6>
+                <small class="text-muted" style="font-size: 0.75rem;">
+                    <i class="fa-regular fa-clock me-1"></i>{fecha_str}
+                </small>
+            </div>
+        </div>
         {mensaje_html}
     </div>
     
     <div id="pote-progress-container" hx-swap-oob="true">
-        <div class="progress mb-3" style="height: 30px; border-radius: 15px; background-color: rgba(255,255,255,0.25);">
-            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated rounded-pill fw-bold" role="progressbar" style="width: {porcentaje}%;" aria-valuenow="{porcentaje}" aria-valuemin="0" aria-valuemax="100">
-                {porcentaje:.1f}%
+        <div class="custom-progress mb-3">
+            <div class="custom-progress-bar" role="progressbar" style="width: {porcentaje}%;" aria-valuenow="{porcentaje}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-heart">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
             </div>
         </div>
         
-        <div class="d-flex justify-content-between text-white fw-bold mb-4">
+        <div class="d-flex justify-content-between text-white fw-bold mb-3 px-1" style="font-size: 0.95rem;">
             <span>Recaudado: ${total_recaudado:.2f}</span>
             <span>Meta: ${float(campana.meta_total):.2f}</span>
+        </div>
+
+        <div class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill mt-2 fw-semibold">
+            <i class="fa-solid fa-hands-holding-circle me-1 animate-pulse"></i> ¡{porcentaje:.1f}% de la meta alcanzada!
         </div>
     </div>
     """

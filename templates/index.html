@@ -200,14 +200,14 @@
                                     </div>
                                 </div>
                                 
-                                <div class="d-flex justify-content-between text-white fw-bold mb-0 px-1" style="font-size: 0.95rem;">
+                                <div class="d-flex justify-content-between text-white fw-bold mb-3 px-1" style="font-size: 0.95rem;">
                                     <span>Recaudado: ${{ "%.2f"|format(total_recaudado) }}</span>
                                     <span>Meta: ${{ "%.2f"|format(campana.meta_total | float) }}</span>
                                 </div>
-                            </div>
-                            
-                            <div class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill mt-2 fw-semibold">
-                                <i class="fa-solid fa-hands-holding-circle me-1 animate-pulse"></i> ¡{{ "%.1f"|format(porcentaje) }}% de la meta alcanzada!
+
+                                <div class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill mt-2 fw-semibold">
+                                    <i class="fa-solid fa-hands-holding-circle me-1 animate-pulse"></i> ¡{{ "%.1f"|format(porcentaje) }}% de la meta alcanzada!
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,9 +272,8 @@
                             <div class="p-3 mb-3 border-0 donor-card shadow-xs-soft">
                                 <div class="d-flex align-items-center gap-3">
                                     <!-- Initials avatar -->
-                                    {% set initials = "CS" %}
-                                    {% if aportante.nombre %}
-                                        {% set names = aportante.nombre.split() %}
+                                                              {% if aportante.nombre_decrypted %}
+                                        {% set names = aportante.nombre_decrypted.split() %}
                                         {% if names|length > 1 %}
                                             {% set initials = (names[0][0] + names[1][0]) | upper %}
                                         {% else %}
@@ -282,7 +281,7 @@
                                         {% endif %}
                                     {% endif %}
                                     
-                                    {% set char = aportante.nombre[0] | upper if aportante.nombre else 'A' %}
+                                    {% set char = aportante.nombre_decrypted[0] | upper if aportante.nombre_decrypted else 'A' %}
                                     {% if char in 'AEIOU' %}
                                         {% set bg_grad = 'background: linear-gradient(135deg, #EC4899, #8B5CF6);' %}
                                     {% elif char in 'BCDFG' %}
@@ -294,12 +293,12 @@
                                     {% else %}
                                         {% set bg_grad = 'background: linear-gradient(135deg, #6366F1, #4F46E5);' %}
                                     {% endif %}
-
+ 
                                     <div class="avatar-circle" style="{{ bg_grad }}">
                                         {{ initials }}
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 text-dark fw-bold">{{ aportante.nombre }}</h6>
+                                        <h6 class="mb-0 text-dark fw-bold">{{ aportante.nombre_decrypted }}</h6>
                                         <small class="text-muted" style="font-size: 0.75rem;">
                                             <i class="fa-regular fa-clock me-1"></i>{{ aportante.fecha_aporte.strftime('%Y-%m-%d %H:%M') }}
                                         </small>
