@@ -43,3 +43,7 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
+
+# Archivos temporales del proyecto (capturas, QRs sin procesar, etc.)
+Temporal/
+temporal/
