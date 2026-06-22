@@ -1,21 +1,33 @@
 #!/usr/bin/env bash
 # =========================================================
 # Muestra la API key generada por OpenWA en el primer arranque.
-# Copiala al archivo .env del proyecto FastAPI como OPENWA_API_KEY
+# Copiala al .env del proyecto principal como OPENWA_API_KEY
 # =========================================================
-set -e
-cd "$(dirname "$0")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ ! -f data/.api-key ]; then
-  echo "[ERROR] No se encontro data/.api-key"
-  echo "        Arranca el contenedor primero: docker compose up -d"
-  exit 1
+CANDIDATOS=(
+    "$SCRIPT_DIR/data/.api-key"
+    "$SCRIPT_DIR/src/data/.api-key"
+)
+
+API_KEY_FILE=""
+for c in "${CANDIDATOS[@]}"; do
+    if [ -f "$c" ]; then
+        API_KEY_FILE="$c"
+        break
+    fi
+done
+
+if [ -z "$API_KEY_FILE" ]; then
+    echo "[ERROR] No se encontro data/.api-key"
+    echo "        Arranca el contenedor primero: bash $SCRIPT_DIR/setup.sh"
+    exit 1
 fi
 
-echo "API key de OpenWA (copiala a tu .env como OPENWA_API_KEY):"
+echo "API key de OpenWA (ubicacion: $API_KEY_FILE)"
+echo "Copiala a tu .env como OPENWA_API_KEY:"
 echo ""
-cat data/.api-key
+cat "$API_KEY_FILE"
 echo ""
 echo ""
-echo "Tambien puedes obtener la sessionId con:"
-echo "  curl -s http://127.0.0.1:2785/api/sessions -H \"X-API-Key: \$(cat data/.api-key)\""
+echo "Para listar las sesiones: bash $SCRIPT_DIR/init-session.sh"

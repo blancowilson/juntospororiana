@@ -1,198 +1,133 @@
 # OpenWA - Servidor de WhatsApp para Juntos por Oriana
 
-Esta carpeta contiene la configuración del servidor **OpenWA**
-(https://www.open-wa.org/), un gateway HTTP self-hosted que
+Esta carpeta contiene la configuración y los scripts para levantar
+**OpenWA** (https://www.open-wa.org/), un gateway HTTP self-hosted que
 automatiza el envío de mensajes de WhatsApp Web.
 
-El servidor corre como un contenedor Docker independiente y expone
-un API REST en `http://127.0.0.1:2785`. La aplicación FastAPI
-lo consume a través de `app/services/whatsapp.py` para enviar:
+## ⚠️ Importante
 
-| Evento                                                         | Mensaje                                                         |
-|----------------------------------------------------------------|-----------------------------------------------------------------|
-| Donación directa (con teléfono)                                | Agradecimiento personalizado con monto                         |
-| Compra de tickets de rifa                                      | Aviso de revisión manual y números provisionales                |
-| Confirmación manual de tickets por el admin                    | Confirmación definitiva con los tickets oficiales               |
+**OpenWA NO publica una imagen oficial en Docker Hub.** El repo oficial te
+obliga a construir la imagen localmente con `docker compose build`. Por eso
+no usamos una imagen pre-hecha, sino que clonamos el repo y construimos.
 
----
+## 🚀 Setup rápido
 
-## 1. Estructura
+```bash
+cd /var/www/juntospororiana
+bash openwa/setup.sh
+```
+
+Eso hace todo: clona el repo, configura `.env`, construye la imagen y arranca
+el contenedor. Tarda unos minutos la primera vez (build de la imagen).
+
+Después:
+
+```bash
+# 1. Verifica que está corriendo
+curl -s http://127.0.0.1:2785/api/health
+
+# 2. Vincula WhatsApp (muestra el QR)
+bash openwa/init-session.sh
+# Escanea el QR con el celular
+
+# 3. Obtén la API key
+bash openwa/get-api-key.sh
+
+# 4. Copia las claves al .env del proyecto principal
+#    OPENWA_API_KEY=owa_k1_xxxx
+#    OPENWA_SESSION_ID=sess_xxxx
+
+# 5. Reinicia FastAPI
+sudo systemctl restart juntospororiana
+```
+
+## 📂 Estructura después del setup
 
 ```
 openwa/
-├── .env.example           # Variables de entorno (copialo a .env)
-├── docker-compose.yml     # Levanta el contenedor OpenWA
-├── data/                  # Sesiones, BD SQLite, API key (NO subir a git)
-├── get-api-key.sh         # Muestra la API key generada
-└── init-session.sh        # Crea la sesion y muestra el QR para vincular
+├── setup.sh             # script de instalacion (clona repo + build + up)
+├── init-session.sh      # crea sesion + muestra QR
+├── get-api-key.sh       # muestra la API key
+├── README.md            # este archivo
+├── .env                 # configuracion de OpenWA (lo crea setup.sh)
+├── data/                # sesiones, BD SQLite, API key (NO se sube a git)
+└── src/                 # codigo fuente de OpenWA (clonado del repo oficial)
+    ├── docker-compose.yml
+    ├── Dockerfile
+    ├── src/
+    └── ...
 ```
 
----
-
-## 2. Arranque local (Windows / Mac / Linux con Docker)
+## 🔧 Comandos útiles
 
 ```bash
-cd openwa
-cp .env.example .env
+# Ver logs en tiempo real
+cd openwa/src && docker compose logs -f
 
-# Levantar el contenedor
-docker compose up -d
+# Ver estado de los contenedores
+cd openwa/src && docker compose ps
 
-# Ver logs (espera a ver "Nest application successfully started")
-docker compose logs -f openwa
+# Reiniciar OpenWA
+cd openwa/src && docker compose restart
+
+# Apagar OpenWA
+cd openwa/src && docker compose down
+
+# Actualizar OpenWA a la ultima version
+cd openwa/src && git pull && cd .. && bash setup.sh
 ```
 
-Cuando veas `Nest application successfully started` el API ya está
-corriendo en `http://127.0.0.1:2785`.
+## 🔌 Endpoints que usa la app
 
-- **Dashboard web:** http://127.0.0.1:2785
-- **Swagger API:** http://127.0.0.1:2785/api/docs
+| Endpoint OpenWA                              | Lo usa                                  |
+|----------------------------------------------|-----------------------------------------|
+| `GET /api/sessions`                          | `openwa_admin.estado_sesion()`          |
+| `GET /api/sessions/{id}`                     | `openwa_admin.estado_sesion()`          |
+| `POST /api/sessions/{id}/messages/send-text` | `whatsapp.enviar_texto()`               |
+| `GET /api/sessions/{id}/qr`                  | `openwa_admin.obtener_qr()`             |
+| `POST /api/sessions/{id}/start`              | `openwa_admin.iniciar_sesion()`         |
 
----
+## ❌ Problemas comunes
 
-## 3. Vincular tu número de WhatsApp
+### "permission denied while trying to connect to the docker API"
 
-### 3.1. Obtener la API key
+Tu usuario no está en el grupo `docker`:
+```bash
+sudo usermod -aG docker $USER
+# IMPORTANTE: cierra sesión y vuelve a entrar (o `exec su -l $USER`)
+```
+
+### "pull access denied for rmyndharis/openwa:latest"
+
+Si ves este error es porque estás usando un docker-compose.yml viejo que
+intentaba bajar una imagen que no existe. Borra la carpeta `openwa/` y vuelve
+a correr `bash openwa/setup.sh` (que clona el repo y construye la imagen).
+
+### "Cannot connect to the Docker daemon"
 
 ```bash
-cat data/.api-key
+sudo systemctl start docker
+sudo systemctl enable docker
 ```
-
-Copia ese valor a tu `.env` del proyecto principal como `OPENWA_API_KEY`.
-
-### 3.2. Crear la sesión y escanear el QR
-
-```bash
-bash init-session.sh
-```
-
-El script:
-1. Crea una sesión llamada `juntospororiana`.
-2. La inicia.
-3. Imprime el QR en formato JSON (campo `image` es base64 PNG).
-
-**Para escanear el QR tienes dos opciones:**
-
-- **A) Dashboard web:** abre http://127.0.0.1:2785, ve a la sesión y
-  escanea el QR que se muestra ahí.
-- **B) Directo desde el celular:** abre WhatsApp en tu teléfono → ⋮ →
-  *Dispositivos vinculados* → *Vincular un dispositivo* → escanea el
-  QR de la terminal (puedes decodificar el base64 a imagen con cualquier
-  visor online).
-
-Al final del script se imprime algo como:
-
-```
-SESSION_ID=sess_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-```
-
-Copia ese ID a tu `.env` del proyecto principal como `OPENWA_SESSION_ID`.
-
-### 3.3. Reinicia FastAPI
-
-```bash
-# En el proyecto principal
-python main.py
-# o si usas uvicorn
-uvicorn main:app --reload
-```
-
----
-
-## 4. Configuración en el proyecto principal
-
-En tu archivo `.env` (raíz de JuntosporOriana):
-
-```ini
-OPENWA_BASE_URL=http://127.0.0.1:2785/api
-OPENWA_API_KEY=owa_k1_xxxxxxxxxxxx
-OPENWA_SESSION_ID=sess_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-OPENWA_ENABLED=true
-OPENWA_DEFAULT_COUNTRY_CODE=58
-```
-
-Si `OPENWA_ENABLED=false` los envíos se omiten (útil en desarrollo
-cuando aún no has vinculado WhatsApp).
-
----
-
-## 5. Despliegue en VPS (Ubuntu)
-
-El script `vps_deploy/deploy.sh` ya instala Docker y deja preparado
-el servicio systemd. Después de correrlo:
-
-```bash
-cd /var/www/juntospororiana/openwa
-cp .env.example .env
-nano .env   # ajustar valores si quieres
-
-# Arrancar el contenedor
-sudo systemctl start openwa
-sudo systemctl status openwa
-
-# Esperar 20-30s a que genere la API key
-sleep 30
-cat data/.api-key
-
-# Crear sesion y mostrar QR (ejecutar una sola vez)
-sudo -u jpoadmin bash init-session.sh
-```
-
-Para mantener la sesión viva entre reinicios del servidor, asegúrate
-de que el contenedor Docker **no se elimine** (en `docker-compose.yml`
-ya está `restart: unless-stopped`).
-
----
-
-## 6. Probar el envío desde la línea de comandos
-
-```bash
-API_KEY=$(cat openwa/data/.api-key)
-SESSION_ID=$(grep OPENWA_SESSION_ID .env | cut -d= -f2)
-
-curl -X POST "http://127.0.0.1:2785/api/sessions/${SESSION_ID}/messages/send-text" \
-  -H "X-API-Key: ${API_KEY}" \
-  -H "Content-Type: application/json" \
-  -d '{"chatId":"584141234567@c.us","text":"Hola desde OpenWA!"}'
-```
-
-(Sustituye `584141234567` por tu número con código de país.)
-
----
-
-## 7. Troubleshooting
 
 ### La sesión se desconecta
-WhatsApp Web a veces cierra sesiones inactivas. Para reconectarla:
 
+WhatsApp Web a veces cierra sesiones inactivas. El contenedor se reinicia
+solo (`restart: unless-stopped`). Si sigue fallando, escanea el QR de nuevo:
 ```bash
-# El contenedor se reinicia solo (restart: unless-stopped)
-docker compose restart openwa
-# Espera 30s y vuelve a escanear el QR
-bash init-session.sh
-```
-
-### OpenWA no responde
-```bash
-docker compose ps
-docker compose logs --tail 100 openwa
+bash openwa/init-session.sh
 ```
 
 ### Quiero cambiar de motor (whatsapp-web.js ↔ baileys)
-Edita `.env` y cambia `ENGINE_TYPE`. Para VPS pequeños se recomienda
-`baileys` (no usa navegador, consume menos RAM).
 
-### El número se banea
-WhatsApp puede suspender números si se comportan como bot. Revisa:
-- ¿Estás enviando mensajes masivos a gente que no te ha contactado?
-- ¿Hay un volumen muy alto en poco tiempo?
-- OpenWA ya incluye rate limiting y simulación de tecleo, pero el
-  comportamiento humano sigue siendo responsabilidad del operador.
+Edita `openwa/.env` y cambia `ENGINE_TYPE`. Para VPS pequeños se recomienda
+`baileys` (no usa navegador, consume menos RAM). Después:
+```bash
+cd openwa/src && docker compose restart
+```
 
----
+## ⚖️ Aviso legal
 
-## 8. Aviso legal
-
-OpenWA **no está afiliado a Meta ni a WhatsApp**. Es un proyecto
-open-source independiente. Úsalo bajo tu responsabilidad respetando
-los términos de servicio de WhatsApp.
+OpenWA **no está afiliado a Meta ni a WhatsApp**. Es un proyecto open-source
+independiente. Úsalo bajo tu responsabilidad respetando los términos de
+servicio de WhatsApp.
