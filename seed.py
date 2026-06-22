@@ -3,15 +3,24 @@ from datetime import datetime, timedelta, timezone
 from app.db.session import SessionLocal, engine, Base
 from app.models.all_models import Campana, Rifas, Tickets
 
+# Valores por defecto de la campaña y rifa
+META_TOTAL = 2750.00
+FECHA_SORTEO = datetime(2026, 7, 22, 19, 0, 0, tzinfo=timezone.utc)  # 22 de Julio 2026, 7pm UTC
+PREMIO = "Xiaomi Redmi 15c 8gb/256 Gb"
+PRECIO_TICKET_BS = 800.00
+PRECIO_TICKET_USD = 1.00
+LOTERIA = "Triple Caracas"
+TITULO = "Gran Rifa Solidaria por Oriana"
+
 def seed_database(reset: bool = False):
     if reset:
         print("Eliminando tablas existentes (Reset)...")
         Base.metadata.drop_all(bind=engine)
-        
+
     # 1. Asegurar que las tablas existan
     print("Creando tablas...")
     Base.metadata.create_all(bind=engine)
-    
+
     db = SessionLocal()
     try:
         # 2. Configurar Campaña Global
@@ -19,7 +28,7 @@ def seed_database(reset: bool = False):
         if not campana_activa:
             print("Configurando campaña de recaudación global...")
             campana_activa = Campana(
-                meta_total=2600.00,
+                meta_total=META_TOTAL,
                 recaudado_manual=0.00,
                 activa=True
             )
@@ -32,20 +41,19 @@ def seed_database(reset: bool = False):
         rifa_activa = db.query(Rifas).filter(Rifas.estado == "Activa").first()
         if not rifa_activa:
             print("Configurando nueva Rifa Activa...")
-            fecha_sorteo = datetime.now(timezone.utc) + timedelta(days=30)  # Sorteo en 30 días
             rifa_activa = Rifas(
-                titulo="Gran Rifa Solidaria por Oriana",
-                premio="Xiaomi Redmi 15c 8gb/256 Gb",
-                precio_ticket_bs=800.00,  # Precio de referencia en Bs
-                precio_ticket_usd=1.00,   # Precio en USD
+                titulo=TITULO,
+                premio=PREMIO,
+                precio_ticket_bs=PRECIO_TICKET_BS,
+                precio_ticket_usd=PRECIO_TICKET_USD,
                 total_numeros=1000,
-                loteria_referencia="Triple Caracas",
-                fecha_sorteo=fecha_sorteo,
+                loteria_referencia=LOTERIA,
+                fecha_sorteo=FECHA_SORTEO,
                 estado="Activa"
             )
             db.add(rifa_activa)
             db.flush()  # Para obtener el id de la rifa
-            
+
             # 4. Generar el inventario de 1000 tickets (000 a 999)
             print("Generando 1000 tickets (000 al 999)... Esto puede tomar unos segundos.")
             tickets = []
@@ -56,7 +64,7 @@ def seed_database(reset: bool = False):
                     estado="Disponible"
                 )
                 tickets.append(ticket)
-            
+
             # Insertar en lotes (bulk save) para optimizar rendimiento
             db.bulk_save_objects(tickets)
             db.commit()

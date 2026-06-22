@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -19,6 +20,38 @@ logging.basicConfig(level=logging.INFO)
 # 1. Crear las tablas en la BD (para MVP, aunque en pro se usa Alembic)
 Base.metadata.create_all(bind=engine)
 
+# Meses en espanol para filtros Jinja (no depende del locale del sistema)
+_MESES_ES = [
+    "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+]
+_MESES_ES_ABREV = [
+    "", "ene", "feb", "mar", "abr", "may", "jun",
+    "jul", "ago", "sep", "oct", "nov", "dic"
+]
+_DIAS_ES = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
+
+
+def fecha_es(value: datetime, formato: str = "completo") -> str:
+    """Filtro Jinja para formatear fechas en espanol.
+    Formatos: 'completo' (22 de julio de 2026), 'corto' (22 de julio 2026),
+              'con_dia' (miercoles 22 de julio de 2026), 'solo_dia' (miercoles 22 de julio)
+    """
+    if value is None:
+        return ""
+    if formato == "completo":
+        return f"{value.day} de {_MESES_ES[value.month]} de {value.year}"
+    elif formato == "corto":
+        return f"{value.day} de {_MESES_ES[value.month]} {value.year}"
+    elif formato == "con_dia":
+        return f"{_DIAS_ES[value.weekday()]} {value.day} de {_MESES_ES[value.month]} de {value.year}"
+    elif formato == "solo_dia":
+        return f"{_DIAS_ES[value.weekday()]} {value.day} de {_MESES_ES[value.month]}"
+    elif formato == "hora":
+        return value.strftime("%H:%M")
+    return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Setup Background Scheduler
@@ -37,6 +70,12 @@ app = FastAPI(title="Juntos por Oriana", lifespan=lifespan)
 
 # Middleware de sesiones (para almacenar respuestas de captcha)
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY, max_age=3600)
+
+# Filtros Jinja personalizados
+from app.api.routers.public import templates as _public_templates
+from app.api.routers.admin import templates as _admin_templates
+for _tpl in (_public_templates, _admin_templates):
+    _tpl.env.filters["fecha_es"] = fecha_es
 
 # Montar archivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
