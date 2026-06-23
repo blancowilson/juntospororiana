@@ -4,7 +4,7 @@ import pandas as pd
 import secrets
 from dataclasses import dataclass
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -586,7 +586,7 @@ async def reversar_por_referencia(referencia: str, request: Request, db: Session
 
 
 @router.post("/confirmar/aportante/{aportante_id}", response_class=HTMLResponse)
-async def confirmar_aportante(aportante_id: int, request: Request, db: Session = Depends(get_db)):
+async def confirmar_aportante(aportante_id: int, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Confirma tickets y notifica por WhatsApp (decifrando el telefono)."""
     usuario = "admin"
     try:
@@ -621,17 +621,16 @@ async def confirmar_aportante(aportante_id: int, request: Request, db: Session =
         nombre = crypto.descifrar(aportante.nombre)
 
         if telefono and rifa and nombre:
-            try:
-                numeros = [f"{t.numero:04d}" for t in tickets_pagados]
-                wa.notificar_confirmacion_tickets(
-                    telefono=telefono,
-                    nombre=nombre,
-                    cantidad=len(tickets_pagados),
-                    numeros=numeros,
-                    rifa_titulo=rifa.titulo,
-                )
-            except Exception as e:
-                logger.error(f"Error enviando WhatsApp de confirmacion: {e}")
+            numeros = [f"{t.numero:04d}" for t in tickets_pagados]
+            # Background: el envio respeta delay humano y rate limit
+            background_tasks.add_task(
+                wa.notificar_confirmacion_tickets,
+                telefono=telefono,
+                nombre=nombre,
+                cantidad=len(tickets_pagados),
+                numeros=numeros,
+                rifa_titulo=rifa.titulo,
+            )
 
         audit(db, request, usuario, "CONFIRM", "Aportante", aportante_id,
               f"tickets={len(tickets_pagados)} rifa={rifa.titulo if rifa else '-'}")

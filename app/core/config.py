@@ -28,6 +28,24 @@ class Settings(BaseSettings):
     # Codigo de pais por defecto para normalizar telefonos (Venezuela = 58)
     OPENWA_DEFAULT_COUNTRY_CODE: str = "58"
 
+    # --- Anti-ban: delays y rate limits para envios WhatsApp ---
+    # Delay min/max entre envios a destinatarios distintos (segundos).
+    # El delay real se sortea entre estos valores, ajustado por horario (mas lento de noche).
+    WA_MIN_DELAY_SEC: int = 25
+    WA_MAX_DELAY_SEC: int = 90
+    # Multiplicador del delay durante la "noche" (22:00 - 08:00 hora Venezuela).
+    # 1.0 = igual de rapido, 3.0 = tres veces mas lento.
+    WA_NIGHT_MULTIPLIER: float = 3.0
+    # Maximo de mensajes salientes por hora y por dia.
+    # Comunidad recomienda <30/hora y <200/dia para numeros con <3 semanas.
+    WA_MAX_PER_HOUR: int = 20
+    WA_MAX_PER_DAY: int = 80
+    # Si True, NO envia si se alcanza el limite (se hace log y se descarta el mensaje).
+    # Si False, encola y espera. Recomendado True para que la app no se cuelgue.
+    WA_BLOCK_ON_LIMIT: bool = True
+    # Timezone de la campana para detectar "noche" (default America/Caracas)
+    WA_TIMEZONE: str = "America/Caracas"
+
     # --- Cifrado de datos personales (PII) ---
     # Generar con:
     #   FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")

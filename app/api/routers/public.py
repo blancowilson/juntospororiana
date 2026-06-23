@@ -1,6 +1,6 @@
 import logging
 import random
-from fastapi import APIRouter, Request, Form, Depends
+from fastapi import APIRouter, Request, Form, Depends, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -158,6 +158,7 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/ticket/comprar-aleatorio", response_class=HTMLResponse)
 async def comprar_tickets_aleatorios(
     request: Request,
+    background_tasks: BackgroundTasks,
     cantidad: int = Form(...),
     nombre: str = Form(...),
     cedula: str = Form(...),
@@ -257,9 +258,11 @@ async def comprar_tickets_aleatorios(
     nuevo_aportante.boletos_iniciales = ", ".join(numeros_asignados)
     db.commit()
 
-    # Notificacion WhatsApp: revision manual de la rifa
-    try:
-        wa.notificar_recepcion_tickets(
+    # Notificacion WhatsApp: revision manual de la rifa (background para no bloquear
+    # la respuesta HTTP; el envio se hace con delay humano + rate limit).
+    if reserva_data.telefono:
+        background_tasks.add_task(
+            wa.notificar_recepcion_tickets,
             telefono=reserva_data.telefono,
             nombre=reserva_data.nombre,
             cantidad=reserva_data.cantidad,
@@ -267,8 +270,6 @@ async def comprar_tickets_aleatorios(
             monto=float(reserva_data.monto_reportado),
             moneda=nuevo_aportante.moneda,
         )
-    except Exception as e:
-        logger.error(f"Error enviando WhatsApp de compra de tickets: {e}")
 
     # Generar la respuesta HTML del modal exitoso
     numeros_html = "".join([f'<div class="col-6 col-sm-4 mb-2"><span class="badge bg-light text-dark border p-2 w-100 fs-5 fw-bold">{n}</span></div>' for n in numeros_asignados])
@@ -299,6 +300,7 @@ async def comprar_tickets_aleatorios(
 @router.post("/aportar/directo", response_class=HTMLResponse)
 async def aportar_directo(
     request: Request,
+    background_tasks: BackgroundTasks,
     nombre: str = Form(...),
     monto_reportado: float = Form(...),
     metodo_pago: str = Form(...),
@@ -348,18 +350,16 @@ async def aportar_directo(
     db.commit()
     db.refresh(nuevo_aportante)
 
-    # Notificacion WhatsApp (no bloquea la respuesta si falla)
+    # Notificacion WhatsApp (background: no bloquea la respuesta, delay humano + rate limit)
     if donacion_data.telefono:
-        try:
-            wa.notificar_donacion(
-                telefono=donacion_data.telefono,
-                nombre=donacion_data.nombre,
-                monto=float(donacion_data.monto_reportado),
-                moneda="USD",
-                mensaje_apoyo=donacion_data.mensaje_apoyo,
-            )
-        except Exception as e:
-            logger.error(f"Error enviando WhatsApp de donacion: {e}")
+        background_tasks.add_task(
+            wa.notificar_donacion,
+            telefono=donacion_data.telefono,
+            nombre=donacion_data.nombre,
+            monto=float(donacion_data.monto_reportado),
+            moneda="USD",
+            mensaje_apoyo=donacion_data.mensaje_apoyo,
+        )
 
     # Obtener campaña activa para los límites de meta y recaudación manual
     campana = db.execute(select(Campana).where(Campana.activa == True)).scalar_one_or_none()
