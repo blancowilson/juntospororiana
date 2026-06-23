@@ -1,0 +1,90 @@
+<div class="modal-content border-0 rounded-4 shadow-lg">
+    <div class="modal-header bg-primary text-white py-3">
+        <h5 class="modal-title fw-bold" id="reasignarModalLabel">
+            <i class="fa-solid fa-rotate-left me-2"></i>Reasignar Boletos
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body p-4">
+        <form hx-post="/admin/reasignar/aportante/{{ aportante.id }}" hx-target="#reasignar-result" hx-swap="innerHTML">
+            <!-- Detalles del Aportante -->
+            <div class="mb-3 p-3 bg-light rounded-3">
+                <div class="small text-muted">Aportante:</div>
+                <div class="fw-bold fs-6 text-dark mb-2">{{ nombre_decrypted }}</div>
+                <div class="row text-dark small">
+                    <div class="col-6">
+                        <strong>Pago Original:</strong> 
+                        {% if aportante.moneda == 'BS' %}Bs.{% else %}${% endif %} {{ "%.2f"|format(aportante.monto_reportado) }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Precio Rifa Actual:</strong> 
+                        {% if aportante.moneda == 'BS' %}Bs.{% else %}${% endif %} {{ "%.2f"|format(precio_unitario) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boletos Iniciales -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-dark small">Boletos Originales Reservados:</label>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    {% for item in original_tickets_status %}
+                        <span class="badge {% if item.disponible %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} px-2 py-1" style="font-size: 0.85rem;">
+                            {{ "%03d"|format(item.numero) }}
+                            <small class="d-block" style="font-size: 0.65rem;">({{ "Libre" if item.disponible else item.estado }})</small>
+                        </span>
+                    {% endfor %}
+                </div>
+                {% if all_original_available %}
+                    <div class="alert alert-success py-2 px-3 border-0 rounded-3 small">
+                        <i class="fa-solid fa-circle-check me-1"></i> Todos los números originales están libres para reasignación.
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning py-2 px-3 border-0 rounded-3 small mb-0">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Algunos o todos los números originales ya están ocupados.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Selección de Modo -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-dark small">Modo de Asignación:</label>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="mode" id="mode-original" value="original" 
+                           {% if not all_original_available %}disabled{% else %}checked{% endif %}>
+                    <label class="form-check-label small text-dark" for="mode-original">
+                        Intentar reasignar números originales
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="mode-random" value="random"
+                           {% if not all_original_available %}checked{% endif %}>
+                    <label class="form-check-label small text-dark" for="mode-random">
+                        Asignar números disponibles al azar automáticamente
+                    </label>
+                </div>
+            </div>
+
+            <!-- Cantidad de Boletos -->
+            <div class="mb-4">
+                <label for="cantidad" class="form-label fw-semibold text-dark small">Cantidad de Boletos a Asignar:</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-dark"><i class="fa-solid fa-hashtag"></i></span>
+                    <input type="number" class="form-control" id="cantidad" name="cantidad" min="1" max="100" 
+                           value="{{ recomendado }}" required>
+                </div>
+                <div class="form-text text-muted small mt-1">
+                    <i class="fa-solid fa-lightbulb text-warning me-1"></i>
+                    Recomendación calculada: <strong>{{ recomendado }}</strong> boleto(s) por el monto reportado.
+                </div>
+            </div>
+
+            <!-- Contenedor para mensajes de resultado/error de HTMX -->
+            <div id="reasignar-result" class="mb-3"></div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light fw-semibold rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary fw-semibold rounded-3 px-4">Proceder</button>
+            </div>
+        </form>
+    </div>
+</div>

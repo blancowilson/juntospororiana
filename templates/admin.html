@@ -228,11 +228,24 @@
                                         {% else %}
                                         <div><span class="badge bg-light text-muted">N/A</span></div>
                                         {% endif %}
-                                        {% if aporte.telefono %}
-                                        <small class="text-muted"><i class="fa-brands fa-whatsapp text-success me-1"></i>{{ aporte.telefono }}</small>
-                                        {% else %}
-                                        <small class="text-muted">Sin telefono</small>
-                                        {% endif %}
+                                         {% if aporte.telefono %}
+                                         <div class="d-flex align-items-center gap-2 mt-1">
+                                             <small class="text-muted"><i class="fa-brands fa-whatsapp text-success me-1"></i>{{ aporte.telefono }}</small>
+                                             {% if wa_enabled and wa_status.conectado %}
+                                             <button class="btn btn-link p-0 text-success"
+                                                     hx-get="/admin/whatsapp/aportante/{{ aporte.id }}/mensaje"
+                                                     hx-target="#whatsapp-modal-content"
+                                                     data-bs-toggle="modal"
+                                                     data-bs-target="#whatsappModal"
+                                                     title="Enviar mensaje personalizado por WhatsApp"
+                                                     style="line-height: 1; border: none; background: transparent;">
+                                                 <i class="fa-solid fa-paper-plane" style="font-size: 0.75rem;"></i>
+                                             </button>
+                                             {% endif %}
+                                         </div>
+                                         {% else %}
+                                         <small class="text-muted">Sin telefono</small>
+                                         {% endif %}
                                     </td>
                                     <td>
                                         <span class="fw-bold text-dark">
@@ -309,15 +322,15 @@
                                                     </button>
                                                 </div>
                                             {% endif %}
-                                            {% if not t_estados and aporte.boletos_iniciales %}
-                                                <button class="btn btn-sm btn-outline-primary"
-                                                        hx-post="/admin/reasignar/aportante/{{ aporte.id }}"
-                                                        hx-target="#action-container-{{ aporte.id }}"
-                                                        hx-swap="innerHTML"
-                                                        hx-confirm="¿Reasignar los boletos {{ aporte.boletos_iniciales }} a este aportante?">
-                                                    <i class="fa-solid fa-rotate-left me-1"></i> Reasignar
-                                                </button>
-                                            {% endif %}
+                                             {% if not t_estados and aporte.boletos_iniciales %}
+                                                 <button class="btn btn-sm btn-outline-primary"
+                                                         hx-get="/admin/reasignar/aportante/{{ aporte.id }}/form"
+                                                         hx-target="#reasignar-modal-content"
+                                                         data-bs-toggle="modal"
+                                                         data-bs-target="#reasignarModal">
+                                                     <i class="fa-solid fa-rotate-left me-1"></i> Reasignar
+                                                 </button>
+                                             {% endif %}
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -332,6 +345,20 @@
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Modal de Reasignación -->
+    <div class="modal fade" id="reasignarModal" tabindex="-1" aria-labelledby="reasignarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" id="reasignar-modal-content">
+            <!-- Se carga dinámicamente con HTMX -->
+        </div>
+    </div>
+
+    <!-- Modal de WhatsApp Personalizado -->
+    <div class="modal fade" id="whatsappModal" tabindex="-1" aria-labelledby="whatsappModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" id="whatsapp-modal-content">
+            <!-- Se carga dinámicamente con HTMX -->
         </div>
     </div>
 

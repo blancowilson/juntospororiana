@@ -4,13 +4,13 @@ import pandas as pd
 import secrets
 from dataclasses import dataclass
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request, BackgroundTasks, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy import select, update, func
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.config import settings
@@ -675,41 +675,133 @@ async def reversar_aportante(aportante_id: int, request: Request, db: Session = 
         )
 
 
-@router.post("/reasignar/aportante/{aportante_id}", response_class=HTMLResponse)
-async def reasignar_aportante(aportante_id: int, request: Request, db: Session = Depends(get_db)):
-    usuario = "admin"
+@router.get("/reasignar/aportante/{aportante_id}/form", response_class=HTMLResponse)
+async def reasignar_aportante_form(aportante_id: int, request: Request, db: Session = Depends(get_db)):
     try:
         aportante = db.get(Aportantes, aportante_id)
         if not aportante:
             raise HTTPException(status_code=404, detail="Aportante no encontrado")
             
-        if not aportante.boletos_iniciales:
-            raise HTTPException(status_code=400, detail="No hay registro de boletos iniciales para este aportante")
-            
-        # Parsear boletos
-        numeros = [int(n.strip()) for n in aportante.boletos_iniciales.split(",") if n.strip().isdigit()]
-        if not numeros:
-            raise HTTPException(status_code=400, detail="El formato de boletos iniciales es inválido")
-            
-        # Buscar el estado de esos tickets en la rifa activa
+        nombre_decrypted = crypto.descifrar(aportante.nombre) or "Anónimo"
+        
         rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
         if not rifa:
             raise HTTPException(status_code=400, detail="No hay una rifa activa")
             
-        stmt = select(Tickets).where(Tickets.rifa_id == rifa.id, Tickets.numero.in_(numeros))
-        tickets = db.execute(stmt).scalars().all()
+        precio_unitario = float(rifa.precio_ticket_usd) if aportante.moneda == "USD" else float(rifa.precio_ticket_bs)
         
-        # Verificar disponibilidad
-        ocupados = [t.numero for t in tickets if t.estado != "Disponible"]
-        if ocupados:
-            ocupados_str = ", ".join([f"{n:03d}" for n in ocupados])
-            return HTMLResponse(
-                f'<span class="text-danger small fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Ocupados: {ocupados_str}</span>'
-            )
+        # Calcular recomendación de cantidad
+        monto = float(aportante.monto_reportado) if aportante.monto_reportado else 0.0
+        recomendado = int(monto / precio_unitario) if precio_unitario > 0 else 1
+        if recomendado < 1:
+            recomendado = 1
+            
+        # Parsear y verificar boletos iniciales
+        original_tickets_status = []
+        all_original_available = True
+        if aportante.boletos_iniciales:
+            numeros = [int(n.strip()) for n in aportante.boletos_iniciales.split(",") if n.strip().isdigit()]
+            if numeros:
+                stmt = select(Tickets).where(Tickets.rifa_id == rifa.id, Tickets.numero.in_(numeros))
+                tickets = db.execute(stmt).scalars().all()
+                tickets_by_num = {t.numero: t for t in tickets}
+                for num in numeros:
+                    t = tickets_by_num.get(num)
+                    disponible = t.estado == "Disponible" if t else False
+                    if not disponible:
+                        all_original_available = False
+                    original_tickets_status.append({
+                        "numero": num,
+                        "disponible": disponible,
+                        "estado": t.estado if t else "No existe"
+                    })
+        else:
+            all_original_available = False
+            
+        return templates.TemplateResponse(
+            "_modal_reasignar.html",
+            {
+                "request": request,
+                "aportante": aportante,
+                "nombre_decrypted": nombre_decrypted,
+                "precio_unitario": precio_unitario,
+                "recomendado": recomendado,
+                "original_tickets_status": original_tickets_status,
+                "all_original_available": all_original_available
+            }
+        )
+    except Exception as e:
+        logger.exception(f"Error cargando formulario de reasignación: {e}")
+        return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=500)
+
+
+@router.post("/reasignar/aportante/{aportante_id}", response_class=HTMLResponse)
+async def reasignar_aportante(
+    aportante_id: int,
+    request: Request,
+    mode: str = Form(...),
+    cantidad: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    usuario = "admin"
+    try:
+        aportante = db.get(Aportantes, aportante_id)
+        if not aportante:
+            return HTMLResponse('<div class="alert alert-danger">Aportante no encontrado</div>', status_code=404)
+            
+        rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
+        if not rifa:
+            return HTMLResponse('<div class="alert alert-danger">No hay una rifa activa</div>', status_code=400)
+            
+        precio_unitario = float(rifa.precio_ticket_usd) if aportante.moneda == "USD" else float(rifa.precio_ticket_bs)
+        
+        # Validar cantidad
+        if cantidad < 1:
+            return HTMLResponse('<div class="alert alert-danger">La cantidad de boletos debe ser al menos 1</div>', status_code=400)
+            
+        tickets_to_assign = []
+        
+        if mode == "original":
+            if not aportante.boletos_iniciales:
+                return HTMLResponse('<div class="alert alert-danger">No hay boletos originales registrados</div>', status_code=400)
+            numeros = [int(n.strip()) for n in aportante.boletos_iniciales.split(",") if n.strip().isdigit()]
+            
+            # Si quiere más de los que tenía originalmente, no se puede en modo original puro
+            if cantidad > len(numeros):
+                return HTMLResponse(
+                    f'<div class="alert alert-danger">La cantidad elegida ({cantidad}) supera la cantidad de boletos originales ({len(numeros)}). Selecciona asignación al azar para asignar boletos extra.</div>',
+                    status_code=400
+                )
+                
+            # Tomar sólo la cantidad solicitada de los originales
+            numeros_a_intentar = numeros[:cantidad]
+            stmt = select(Tickets).where(Tickets.rifa_id == rifa.id, Tickets.numero.in_(numeros_a_intentar))
+            tickets = db.execute(stmt).scalars().all()
+            
+            # Verificar disponibilidad
+            ocupados = [t.numero for t in tickets if t.estado != "Disponible"]
+            if ocupados:
+                ocupados_str = ", ".join([f"{n:03d}" for n in ocupados])
+                return HTMLResponse(
+                    f'<div class="alert alert-danger">Los siguientes números originales ya están ocupados: {ocupados_str}. Usa asignación al azar.</div>',
+                    status_code=400
+                )
+                
+            tickets_to_assign = list(tickets)
+            
+        else: # mode == "random"
+            # Buscar boletos disponibles al azar
+            stmt = select(Tickets).where(Tickets.rifa_id == rifa.id, Tickets.estado == "Disponible").order_by(func.random()).limit(cantidad)
+            tickets = db.execute(stmt).scalars().all()
+            if len(tickets) < cantidad:
+                return HTMLResponse(
+                    f'<div class="alert alert-danger">No hay suficientes boletos disponibles. Libres: {len(tickets)}</div>',
+                    status_code=400
+                )
+            tickets_to_assign = list(tickets)
             
         # Reasignar como "Reservado"
-        precio_unitario = float(rifa.precio_ticket_usd) if aportante.moneda == "USD" else float(rifa.precio_ticket_bs)
-        for t in tickets:
+        for t in tickets_to_assign:
             t.estado = "Reservado"
             t.reservado_en = datetime.now(timezone.utc)
             t.aportante_id = aportante.id
@@ -717,15 +809,95 @@ async def reasignar_aportante(aportante_id: int, request: Request, db: Session =
             t.referencia_pago_hash = aportante.referencia_hash
             t.monto_reportado = precio_unitario
             
-        audit(db, request, usuario, "REASSIGN_APORTANTE", "Aportante", aportante_id, f"boletos={len(tickets)}")
+        audit(db, request, usuario, "REASSIGN_APORTANTE", "Aportante", aportante_id, f"boletos={len(tickets_to_assign)} mode={mode} cantidad={cantidad}")
+        db.commit()
+        
+        # Guardar en boletos_iniciales el nuevo listado si se cambió el número/cantidad de boletos o si fue al azar
+        nuevos_nums_str = ", ".join([f"{t.numero:03d}" for t in tickets_to_assign])
+        aportante.boletos_iniciales = nuevos_nums_str
         db.commit()
         
         return HTMLResponse(
-            '<script>alert("Boletos reasignados con éxito como Reservados."); window.location.reload();</script>'
+            '<div class="alert alert-success border-0 small mb-0"><i class="fa-solid fa-circle-check me-1"></i> Boletos reasignados con éxito. Recargando...</div>'
+            '<script>setTimeout(() => { window.location.reload(); }, 1500);</script>'
         )
     except Exception as e:
         db.rollback()
-        return HTMLResponse(
-            f'<span class="text-danger small">Error: {str(e)}</span>',
-            status_code=500
+        logger.exception(f"Error procesando reasignación: {e}")
+        return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=500)
+
+
+@router.get("/whatsapp/aportante/{aportante_id}/mensaje", response_class=HTMLResponse)
+async def whatsapp_mensaje_form(aportante_id: int, request: Request, db: Session = Depends(get_db)):
+    try:
+        aportante = db.get(Aportantes, aportante_id)
+        if not aportante:
+            raise HTTPException(status_code=404, detail="Aportante no encontrado")
+            
+        nombre_decrypted = crypto.descifrar(aportante.nombre) or "Anónimo"
+        telefono_decrypted = crypto.descifrar(aportante.telefono) or ""
+        
+        # Generar un mensaje por defecto simpático y descriptivo
+        tickets_nums = ", ".join([f"{t.numero:03d}" for t in aportante.tickets])
+        if tickets_nums:
+            mensaje_default = (
+                f"Hola {nombre_decrypted}, un saludo de parte de Juntos por Oriana. 💛\n\n"
+                f"Te escribimos para confirmar que tus boletos para la Gran Rifa Solidaria son: {tickets_nums}.\n\n"
+                f"¡Muchísimas gracias por tu generoso apoyo! Cada aporte cuenta mucho para la salud de Oriana. 🙏"
+            )
+        else:
+            mensaje_default = (
+                f"Hola {nombre_decrypted}, un saludo de parte de Juntos por Oriana. 💛\n\n"
+                f"Nos comunicamos contigo sobre tu reporte de pago para la Rifa. ¡Muchas gracias por tu intención de colaborar! 🙏"
+            )
+            
+        return templates.TemplateResponse(
+            "_modal_whatsapp.html",
+            {
+                "request": request,
+                "aportante": aportante,
+                "nombre_decrypted": nombre_decrypted,
+                "telefono_decrypted": telefono_decrypted,
+                "mensaje_default": mensaje_default
+            }
         )
+    except Exception as e:
+        logger.exception(f"Error cargando formulario de mensaje de WhatsApp: {e}")
+        return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=500)
+
+
+@router.post("/whatsapp/aportante/{aportante_id}/enviar", response_class=HTMLResponse)
+async def whatsapp_enviar_mensaje(
+    aportante_id: int,
+    request: Request,
+    mensaje: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    usuario = "admin"
+    try:
+        aportante = db.get(Aportantes, aportante_id)
+        if not aportante:
+            return HTMLResponse('<div class="alert alert-danger">Aportante no encontrado</div>', status_code=404)
+            
+        telefono_decrypted = crypto.descifrar(aportante.telefono)
+        if not telefono_decrypted:
+            return HTMLResponse('<div class="alert alert-danger">Este aportante no posee teléfono registrado</div>', status_code=400)
+            
+        # Llamar al servicio de whatsapp para enviar el texto
+        success = wa.enviar_texto(telefono_decrypted, mensaje)
+        
+        if success:
+            audit(db, request, usuario, "SEND_CUSTOM_WA", "Aportante", aportante_id, f"telefono={telefono_decrypted[:8]}...")
+            db.commit()
+            return HTMLResponse(
+                '<div class="alert alert-success border-0 small mb-0"><i class="fa-solid fa-circle-check me-1"></i> Mensaje enviado con éxito.</div>'
+                '<script>setTimeout(() => { bootstrap.Modal.getInstance(document.getElementById("whatsappModal")).hide(); }, 2000);</script>'
+            )
+        else:
+            return HTMLResponse(
+                '<div class="alert alert-danger border-0 small mb-0"><i class="fa-solid fa-triangle-exclamation me-1"></i> Error al enviar mensaje. Revisa la sesión en OpenWA.</div>',
+                status_code=400
+            )
+    except Exception as e:
+        logger.exception(f"Error enviando mensaje de WhatsApp: {e}")
+        return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=500)

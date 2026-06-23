@@ -1,0 +1,38 @@
+<div class="modal-content border-0 rounded-4 shadow-lg">
+    <div class="modal-header bg-success text-white py-3">
+        <h5 class="modal-title fw-bold" id="whatsappModalLabel">
+            <i class="fa-brands fa-whatsapp me-2"></i>Enviar Mensaje Personalizado
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body p-4">
+        <form hx-post="/admin/whatsapp/aportante/{{ aportante.id }}/enviar" hx-target="#wa-send-result" hx-swap="innerHTML">
+            <!-- Detalles del Aportante -->
+            <div class="mb-3 p-3 bg-light rounded-3">
+                <div class="small text-muted">Aportante:</div>
+                <div class="fw-bold fs-6 text-dark mb-2">{{ nombre_decrypted }}</div>
+                <div class="small text-muted">Teléfono destino:</div>
+                <div class="fw-bold text-success">{{ telefono_decrypted }}</div>
+            </div>
+
+            <!-- Mensaje -->
+            <div class="mb-4">
+                <label for="mensaje" class="form-label fw-semibold text-dark small">Mensaje Personalizado:</label>
+                <textarea class="form-control fw-medium" id="mensaje" name="mensaje" rows="6" required>{{ mensaje_default }}</textarea>
+                <div class="form-text text-muted small mt-1">
+                    Puedes editar el mensaje antes de enviarlo. El sistema simulará escritura y esperará un delay aleatorio para proteger tu cuenta de suspensión.
+                </div>
+            </div>
+
+            <!-- Contenedor para mensajes de resultado/error de HTMX -->
+            <div id="wa-send-result" class="mb-3"></div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light fw-semibold rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success fw-semibold rounded-3 px-4">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Enviar Mensaje
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
