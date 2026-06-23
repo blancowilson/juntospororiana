@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def liberar_reservas_vencidas():
     db = SessionLocal()
     try:
-        limite = datetime.now(timezone.utc) - timedelta(minutes=30)
+        limite = datetime.now(timezone.utc) - timedelta(hours=24)
         
         # Buscar tickets vencidos
         stmt = select(Tickets).where(Tickets.estado == "Reservado", Tickets.reservado_en <= limite)
