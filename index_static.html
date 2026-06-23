@@ -332,7 +332,18 @@
                         <span class="text-muted small"><i class="fa-solid fa-ticket text-danger me-1"></i>Rifa Activa</span>
                     </div>
                     <h2 class="fw-extrabold text-dark mb-3" id="rifa-titulo-val">Cargando Rifa...</h2>
-                    <p class="text-muted"><i class="fa-regular fa-calendar-days text-danger me-2"></i>Sorteo: <strong id="rifa-fecha-val">-</strong></p>
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                        <p class="text-muted mb-0"><i class="fa-regular fa-calendar-days text-danger me-2"></i>Sorteo: <strong id="rifa-fecha-val">-</strong></p>
+                        <button class="btn btn-outline-raffle btn-sm rounded-pill px-3 py-1.5 fw-bold text-uppercase d-inline-flex align-items-center gap-2 shadow-2xs" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#comoFuncionaRifa" 
+                                aria-expanded="false" 
+                                aria-controls="comoFuncionaRifa"
+                                style="font-size: 0.65rem;">
+                            <i class="fa-solid fa-circle-question"></i> ¿Cómo funciona? Saber más
+                        </button>
+                    </div>
                     
                     <div class="d-flex align-items-center gap-3 my-4">
                         <div class="px-4 py-2.5 bg-light border rounded-3 text-center">
@@ -362,69 +373,57 @@
                             <h5 class="text-success fw-bold mb-0" id="rifa-premio-val">-</h5>
                         </div>
                     </div>
-
-                    <!-- Botón "Saber más" expandible -->
-                    <div class="mt-4">
-                        <button class="btn btn-outline-raffle btn-sm rounded-pill px-3 py-2 fw-bold text-uppercase d-inline-flex align-items-center gap-2 shadow-2xs" 
-                                type="button" 
-                                data-bs-toggle="collapse" 
-                                data-bs-target="#comoFuncionaRifa" 
-                                aria-expanded="false" 
-                                aria-controls="comoFuncionaRifa"
-                                style="font-size: 0.75rem;">
-                            <i class="fa-solid fa-circle-question"></i> ¿Cómo funciona la rifa? Saber más
-                        </button>
-                        
-                        <div class="collapse mt-3" id="comoFuncionaRifa">
-                            <div class="card card-body border-0 bg-light-subtle rounded-4 p-4 shadow-2xs border-start border-4 border-danger">
-                                <h6 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-                                    <i class="fa-solid fa-circle-info text-danger"></i>
-                                    Detalles de la Rifa Solidaria
-                                </h6>
-                                <ul class="list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 0.9rem; line-height: 1.5;">
-                                    <li class="d-flex align-items-start gap-2.5">
-                                        <span class="badge bg-danger-subtle text-danger rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
-                                            <i class="fa-solid fa-ticket"></i>
-                                        </span>
-                                        <div>
-                                            <strong class="text-dark d-block">1. Elige la cantidad de boletos</strong>
-                                            <span class="text-muted small">Puedes escoger la cantidad de números que quieras. ¡Entre más participes, más nos apoyas a lograr la meta médica!</span>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex align-items-start gap-2.5">
-                                        <span class="badge bg-primary-subtle text-primary rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
-                                            <i class="fa-solid fa-shuffle"></i>
-                                        </span>
-                                        <div>
-                                            <strong class="text-dark d-block">2. Asignación al azar</strong>
-                                            <span class="text-muted small">Para garantizar la total transparencia del proceso, nuestro sistema te asignará los números de forma completamente aleatoria.</span>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex align-items-start gap-2.5">
-                                        <span class="badge bg-success-subtle text-success rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
-                                            <i class="fa-solid fa-bell"></i>
-                                        </span>
-                                        <div>
-                                            <strong class="text-dark d-block">3. Confirmación por WhatsApp</strong>
-                                            <span class="text-muted small">Una vez reportes y confirmemos tu pago, te enviaremos de inmediato un mensaje de confirmación por WhatsApp con tus números asignados. ¡Muchas gracias por tu valiosa contribución!</span>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex align-items-start gap-2.5">
-                                        <span class="badge bg-warning-subtle text-warning rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
-                                            <i class="fa-solid fa-clover"></i>
-                                        </span>
-                                        <div>
-                                            <strong class="text-dark d-block">4. Sorteo de Referencia</strong>
-                                            <span class="text-muted small">El ganador será escogido del sorteo de <strong>Triple Caracas a las 7:00 PM</strong> del día indicado. Podrás ver los resultados oficiales en su página: <a href="https://resultadostriplecaracas.com/" target="_blank" class="text-decoration-none fw-bold text-primary">resultadostriplecaracas.com <i class="fa-solid fa-arrow-up-right-from-square ms-0.5" style="font-size: 0.75em;"></i></a>.</span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="col-lg-5">
+                    <!-- Detalle de Rifa Expandible -->
+                    <div class="collapse mb-3" id="comoFuncionaRifa">
+                        <div class="card card-body border-0 bg-light-subtle rounded-4 p-4 shadow-2xs border-start border-4 border-danger">
+                            <h6 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-danger"></i>
+                                Detalles de la Rifa Solidaria
+                            </h6>
+                            <ul class="list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 0.9rem; line-height: 1.5;">
+                                <li class="d-flex align-items-start gap-2.5">
+                                    <span class="badge bg-danger-subtle text-danger rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                        <i class="fa-solid fa-ticket"></i>
+                                    </span>
+                                    <div>
+                                        <strong class="text-dark d-block">1. Elige la cantidad de boletos</strong>
+                                        <span class="text-muted small">Puedes escoger la cantidad de números que quieras. ¡Entre más participes, más nos apoyas a lograr la meta médica!</span>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-start gap-2.5">
+                                    <span class="badge bg-primary-subtle text-primary rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                        <i class="fa-solid fa-shuffle"></i>
+                                    </span>
+                                    <div>
+                                        <strong class="text-dark d-block">2. Asignación al azar</strong>
+                                        <span class="text-muted small">Para garantizar la total transparencia del proceso, nuestro sistema te asignará los números de forma completamente aleatoria.</span>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-start gap-2.5">
+                                    <span class="badge bg-success-subtle text-success rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                        <i class="fa-solid fa-bell"></i>
+                                    </span>
+                                    <div>
+                                        <strong class="text-dark d-block">3. Confirmación por WhatsApp</strong>
+                                        <span class="text-muted small">Una vez reportes y confirmemos tu pago, te enviaremos de inmediato un mensaje de confirmación por WhatsApp con tus números asignados. ¡Muchas gracias por tu valiosa contribución!</span>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-start gap-2.5">
+                                    <span class="badge bg-warning-subtle text-warning rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                        <i class="fa-solid fa-clover"></i>
+                                    </span>
+                                    <div>
+                                        <strong class="text-dark d-block">4. Sorteo de Referencia</strong>
+                                        <span class="text-muted small">El ganador será escogido del sorteo de <strong>Triple Caracas a las 7:00 PM</strong> del día indicado. Podrás ver los resultados oficiales en su página: <a href="https://resultadostriplecaracas.com/" target="_blank" class="text-decoration-none fw-bold text-primary">resultadostriplecaracas.com <i class="fa-solid fa-arrow-up-right-from-square ms-0.5" style="font-size: 0.75em;"></i></a>.</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="p-4 border rounded-4 bg-light shadow-2xs border-white">
                         <h5 class="fw-bold text-dark text-center mb-4"><i class="fa-solid fa-calculator text-danger me-2"></i>Elige la Cantidad</h5>
                         
