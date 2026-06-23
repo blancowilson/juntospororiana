@@ -103,7 +103,7 @@ async def landing_page(request: Request, db: Session = Depends(get_db)):
         ) or 0
 
     # Calcular total recaudado (Manual + Aportantes registrados en BD convertidos a USD si están en BS)
-    tasa = 800.0
+    tasa = 833.33
     if rifa and float(rifa.precio_ticket_usd) > 0:
         tasa = float(rifa.precio_ticket_bs) / float(rifa.precio_ticket_usd)
 
@@ -369,7 +369,7 @@ async def aportar_directo(
     # Recalcular recaudación total (donaciones directas + rifas pagadas)
     from sqlalchemy import func, or_, exists
     rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
-    tasa = 800.0
+    tasa = 833.33
     if rifa and float(rifa.precio_ticket_usd) > 0:
         tasa = float(rifa.precio_ticket_bs) / float(rifa.precio_ticket_usd)
         
