@@ -29,7 +29,7 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav gap-2 align-items-center">
                     <li class="nav-item"><a class="nav-link px-3" href="#">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#pagos">Métodos de Pago</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#pagos">Formas de Colaborar</a></li>
                     <li class="nav-item"><a class="nav-link px-3" href="#pote">El Pote de Esperanza</a></li>
                     {% if rifa %}
                     <li class="nav-item"><a class="nav-link px-3" href="#rifa">Rifa Solidaria</a></li>
@@ -86,7 +86,7 @@
         <!-- B. Tarjetas de Pago -->
         <section id="pagos" class="mb-5">
             <div class="text-center mb-5">
-                <h2 class="fw-bold text-dark mb-2">Métodos de Pago</h2>
+                <h2 class="fw-bold text-dark mb-2">Datos para enviar tu colaboración</h2>
                 <p class="text-muted">Elige el método de tu preferencia para realizar tu aporte directo o comprar tus boletos</p>
             </div>
             <div class="row g-4 justify-content-center">
@@ -347,7 +347,13 @@
                     </div>
 
                     <div class="alert alert-info border-0 bg-light-subtle rounded-3 py-3 my-3 border-start border-4 border-info">
-                        <p class="mb-1 fw-bold text-info"><i class="fa-solid fa-circle-info me-2"></i>Lotería de Referencia: {{ rifa.loteria_referencia }}</p>
+                        <p class="mb-1 fw-bold text-info"><i class="fa-solid fa-circle-info me-2"></i>Lotería de Referencia: {{ rifa.loteria_referencia }} (7:00 PM)</p>
+                        <p class="mb-2 text-muted small">
+                            Los resultados oficiales se pueden verificar directamente en: 
+                            <a href="https://resultadostriplecaracas.com/" target="_blank" class="fw-semibold text-info text-decoration-underline">
+                                resultadostriplecaracas.com <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8em;"></i>
+                            </a>
+                        </p>
                         <p class="mb-0 text-muted small">Quedan <strong>{{ boletos_disponibles }}</strong> boletos disponibles en el sistema.</p>
                     </div>
 
@@ -356,6 +362,66 @@
                         <div>
                             <span class="d-block text-muted x-small-tag fw-semibold text-uppercase">Premio a sortear:</span>
                             <h5 class="text-success fw-bold mb-0">{{ rifa.premio }}</h5>
+                        </div>
+                    </div>
+
+                    <!-- Botón "Saber más" expandible -->
+                    <div class="mt-4">
+                        <button class="btn btn-outline-raffle btn-sm rounded-pill px-3 py-2 fw-bold text-uppercase d-inline-flex align-items-center gap-2 shadow-2xs" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#comoFuncionaRifa" 
+                                aria-expanded="false" 
+                                aria-controls="comoFuncionaRifa"
+                                style="font-size: 0.75rem;">
+                            <i class="fa-solid fa-circle-question"></i> ¿Cómo funciona la rifa? Saber más
+                        </button>
+                        
+                        <div class="collapse mt-3" id="comoFuncionaRifa">
+                            <div class="card card-body border-0 bg-light-subtle rounded-4 p-4 shadow-2xs border-start border-4 border-danger">
+                                <h6 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-circle-info text-danger"></i>
+                                    Detalles de la Rifa Solidaria
+                                </h6>
+                                <ul class="list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 0.9rem; line-height: 1.5;">
+                                    <li class="d-flex align-items-start gap-2.5">
+                                        <span class="badge bg-danger-subtle text-danger rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                            <i class="fa-solid fa-ticket"></i>
+                                        </span>
+                                        <div>
+                                            <strong class="text-dark d-block">1. Elige la cantidad de boletos</strong>
+                                            <span class="text-muted small">Puedes escoger la cantidad de números que quieras. ¡Entre más participes, más nos apoyas a lograr la meta médica!</span>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-2.5">
+                                        <span class="badge bg-primary-subtle text-primary rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                            <i class="fa-solid fa-shuffle"></i>
+                                        </span>
+                                        <div>
+                                            <strong class="text-dark d-block">2. Asignación al azar</strong>
+                                            <span class="text-muted small">Para garantizar la total transparencia del proceso, nuestro sistema te asignará los números de forma completamente aleatoria.</span>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-2.5">
+                                        <span class="badge bg-success-subtle text-success rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                            <i class="fa-solid fa-bell"></i>
+                                        </span>
+                                        <div>
+                                            <strong class="text-dark d-block">3. Confirmación por WhatsApp</strong>
+                                            <span class="text-muted small">Una vez reportes y confirmemos tu pago, te enviaremos de inmediato un mensaje de confirmación por WhatsApp con tus números asignados. ¡Muchas gracias por tu valiosa contribución!</span>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-2.5">
+                                        <span class="badge bg-warning-subtle text-warning rounded-circle p-1.5 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                            <i class="fa-solid fa-clover"></i>
+                                        </span>
+                                        <div>
+                                            <strong class="text-dark d-block">4. Sorteo de Referencia</strong>
+                                            <span class="text-muted small">El ganador será escogido del sorteo de <strong>Triple Caracas a las 7:00 PM</strong> del día indicado. Podrás ver los resultados oficiales en su página: <a href="https://resultadostriplecaracas.com/" target="_blank" class="text-decoration-none fw-bold text-primary">resultadostriplecaracas.com <i class="fa-solid fa-arrow-up-right-from-square ms-0.5" style="font-size: 0.75em;"></i></a>.</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -370,8 +436,8 @@
                                 <button type="button" class="btn qty-btn w-100 shadow-sm" onclick="setQuantity(1)">1</button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="btn qty-btn active w-100 shadow-sm position-relative" onclick="setQuantity(2)">
-                                    2
+                                <button type="button" class="btn qty-btn active w-100 shadow-sm position-relative" onclick="setQuantity(3)">
+                                    3
                                     <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger shadow-sm" style="font-size: 8px;">Popular</span>
                                 </button>
                             </div>
@@ -392,7 +458,7 @@
                         <!-- Selector manual +/- -->
                         <div class="d-flex align-items-center justify-content-center gap-2 mb-4 bg-white border p-2 rounded-3 shadow-sm">
                             <button class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" onclick="adjustQuantity(-1)"><i class="fa-solid fa-minus"></i></button>
-                            <input type="number" id="ticket-qty-input" class="form-control text-center border-0 fw-bold fs-5 p-0" style="width: 80px;" value="2" min="1" max="{{ boletos_disponibles }}" onchange="updateTotalAmount()">
+                            <input type="number" id="ticket-qty-input" class="form-control text-center border-0 fw-bold fs-5 p-0" style="width: 80px;" value="3" min="1" max="{{ boletos_disponibles }}" onchange="updateTotalAmount()">
                             <button class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" onclick="adjustQuantity(1)"><i class="fa-solid fa-plus"></i></button>
                         </div>
 
@@ -715,7 +781,7 @@
             const input = document.getElementById("ticket-qty-input");
             if (!input) return;
             
-            let val = parseInt(input.value) || 2;
+            let val = parseInt(input.value) || 3;
             if (val < 1) val = 1;
             if (val > MAX_TICKETS) val = MAX_TICKETS;
             input.value = val;

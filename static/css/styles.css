@@ -576,3 +576,26 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         display: none;
     }
 }
+
+/* Custom outline button for raffle details */
+.btn-outline-raffle {
+    border: 2px solid #f43f5e;
+    color: #f43f5e;
+    background: transparent;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-raffle:hover {
+    background: var(--primary-gradient);
+    color: #ffffff !important;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -10px rgba(244, 63, 94, 0.4);
+}
+
+.btn-outline-raffle:active, .btn-outline-raffle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(244, 63, 94, 0.25) !important;
+    outline: none;
+}
+
