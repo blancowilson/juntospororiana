@@ -37,6 +37,8 @@ logs/
 # Archivos de prueba temporales
 *.tmp
 *.bak
+*.bak.*
+*.bak?*
 *.swp
 
 # Datos locales (no subir bases de datos)
@@ -48,6 +50,12 @@ logs/
 Temporal/
 temporal/
 
+# QR auto-generado de OpenWA (se regenera en cada escaneo)
+static/openwa_qr.html
+static/openwa_qr.png
+
 # OpenWA (WhatsApp API Gateway): sesiones, base de datos local, API key
 openwa/data/
 openwa/.env
+# Codigo fuente de OpenWA (clonado por setup.sh, no es parte de este repo)
+openwa/src/
