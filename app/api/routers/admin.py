@@ -161,6 +161,13 @@ class AporteMasked:
             return []
 
     @property
+    def boletos_iniciales(self) -> str:
+        try:
+            return self._ap.boletos_iniciales or ""
+        except Exception:
+            return ""
+
+    @property
     def has_full_data(self) -> bool:
         """True si tiene cedula/telefono (para mostrar la columna)."""
         try:
@@ -665,5 +672,61 @@ async def reversar_aportante(aportante_id: int, request: Request, db: Session = 
         db.rollback()
         return HTMLResponse(
             f'<span class="badge badge-danger-custom">Error: {str(e)}</span>',
+            status_code=500
+        )
+
+
+@router.post("/reasignar/aportante/{aportante_id}", response_class=HTMLResponse)
+async def reasignar_aportante(aportante_id: int, request: Request, db: Session = Depends(get_db)):
+    usuario = "admin"
+    try:
+        aportante = db.get(Aportantes, aportante_id)
+        if not aportante:
+            raise HTTPException(status_code=404, detail="Aportante no encontrado")
+            
+        if not aportante.boletos_iniciales:
+            raise HTTPException(status_code=400, detail="No hay registro de boletos iniciales para este aportante")
+            
+        # Parsear boletos
+        numeros = [int(n.strip()) for n in aportante.boletos_iniciales.split(",") if n.strip().isdigit()]
+        if not numeros:
+            raise HTTPException(status_code=400, detail="El formato de boletos iniciales es inválido")
+            
+        # Buscar el estado de esos tickets en la rifa activa
+        rifa = db.execute(select(Rifas).where(Rifas.estado == "Activa")).scalar_one_or_none()
+        if not rifa:
+            raise HTTPException(status_code=400, detail="No hay una rifa activa")
+            
+        stmt = select(Tickets).where(Tickets.rifa_id == rifa.id, Tickets.numero.in_(numeros))
+        tickets = db.execute(stmt).scalars().all()
+        
+        # Verificar disponibilidad
+        ocupados = [t.numero for t in tickets if t.estado != "Disponible"]
+        if ocupados:
+            ocupados_str = ", ".join([f"{n:03d}" for n in ocupados])
+            return HTMLResponse(
+                f'<span class="text-danger small fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Ocupados: {ocupados_str}</span>'
+            )
+            
+        # Reasignar como "Reservado"
+        precio_unitario = float(rifa.precio_ticket_usd) if aportante.moneda == "USD" else float(rifa.precio_ticket_bs)
+        for t in tickets:
+            t.estado = "Reservado"
+            t.reservado_en = datetime.now(timezone.utc)
+            t.aportante_id = aportante.id
+            t.referencia_pago = aportante.referencia
+            t.referencia_pago_hash = aportante.referencia_hash
+            t.monto_reportado = precio_unitario
+            
+        audit(db, request, usuario, "REASSIGN_APORTANTE", "Aportante", aportante_id, f"boletos={len(tickets)}")
+        db.commit()
+        
+        return HTMLResponse(
+            '<script>alert("Boletos reasignados con éxito como Reservados."); window.location.reload();</script>'
+        )
+    except Exception as e:
+        db.rollback()
+        return HTMLResponse(
+            f'<span class="text-danger small">Error: {str(e)}</span>',
             status_code=500
         )

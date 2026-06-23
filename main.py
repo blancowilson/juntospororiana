@@ -47,6 +47,15 @@ try:
     from app.db.session import engine, Base
     import app.models.all_models  # noqa: F401 - registra Campana, Rifas, Aportantes, Tickets, AuditLog
     Base.metadata.create_all(bind=engine)
+    
+    # Agregar columna boletos_iniciales de forma transaccional si no existe
+    with engine.begin() as conn:
+        try:
+            conn.execute(text('ALTER TABLE "Aportantes" ADD COLUMN boletos_iniciales VARCHAR(500)'))
+            logger.info("Añadida columna boletos_iniciales a Aportantes.")
+        except Exception:
+            pass  # Ignorar si ya existe o no se soporta en dialectos locales
+
     logger.info("Esquema de BD verificado/creado.")
 except Exception as _e:
     logger.exception(f"ERROR CRITICO creando esquema de BD: {_e}")

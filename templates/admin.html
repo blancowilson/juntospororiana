@@ -257,7 +257,10 @@
                                                     <span class="badge bg-light text-dark border">{{ "%03d"|format(ticket.numero) }}</span>
                                                 {% endfor %}
                                                 {% if not aporte.tickets %}
-                                                    <small class="text-danger">Ninguno (Liberados)</small>
+                                                    <small class="text-danger d-block">Ninguno (Liberados)</small>
+                                                    {% if aporte.boletos_iniciales %}
+                                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Boletos: {{ aporte.boletos_iniciales }}</small>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                         {% else %}
@@ -305,6 +308,15 @@
                                                         Liberar
                                                     </button>
                                                 </div>
+                                            {% endif %}
+                                            {% if not t_estados and aporte.boletos_iniciales %}
+                                                <button class="btn btn-sm btn-outline-primary"
+                                                        hx-post="/admin/reasignar/aportante/{{ aporte.id }}"
+                                                        hx-target="#action-container-{{ aporte.id }}"
+                                                        hx-swap="innerHTML"
+                                                        hx-confirm="¿Reasignar los boletos {{ aporte.boletos_iniciales }} a este aportante?">
+                                                    <i class="fa-solid fa-rotate-left me-1"></i> Reasignar
+                                                </button>
                                             {% endif %}
                                         {% endif %}
                                     </td>

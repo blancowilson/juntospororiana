@@ -254,6 +254,7 @@ async def comprar_tickets_aleatorios(
         ticket.monto_reportado = precio_unitario
         numeros_asignados.append(f"{ticket.numero:04d}") # Formatear ej: "0607"
 
+    nuevo_aportante.boletos_iniciales = ", ".join(numeros_asignados)
     db.commit()
 
     # Notificacion WhatsApp: revision manual de la rifa

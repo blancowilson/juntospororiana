@@ -43,6 +43,7 @@ class Aportantes(Base):
     metodo_pago: Mapped[str] = mapped_column(String(50), nullable=False)
     referencia: Mapped[str] = mapped_column(String(255), nullable=True)
     tipo_aporte: Mapped[str] = mapped_column(String(20), nullable=False)
+    boletos_iniciales: Mapped[str] = mapped_column(String(500), nullable=True)
     fecha_aporte: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
 
     # HMAC determinista (en hex) para busquedas equality-only sin descifrar
