@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Form, Depends, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from sqlalchemy import select, update, desc
+from sqlalchemy import select, update, desc, func
 from datetime import datetime, timezone
 
 from app.db.session import get_db
@@ -209,6 +209,7 @@ async def comprar_tickets_aleatorios(
     stmt = (
         select(Tickets)
         .where(Tickets.rifa_id == rifa.id, Tickets.estado == "Disponible")
+        .order_by(func.random())
         .limit(reserva_data.cantidad)
     )
     if db.bind.dialect.name != "sqlite":
@@ -253,7 +254,7 @@ async def comprar_tickets_aleatorios(
         ticket.referencia_pago = crypto.cifrar(reserva_data.referencia)
         ticket.referencia_pago_hash = crypto.hash_busqueda(reserva_data.referencia)
         ticket.monto_reportado = precio_unitario
-        numeros_asignados.append(f"{ticket.numero:04d}") # Formatear ej: "0607"
+        numeros_asignados.append(f"{ticket.numero:03d}") # Formatear ej: "607"
 
     nuevo_aportante.boletos_iniciales = ", ".join(numeros_asignados)
     db.commit()

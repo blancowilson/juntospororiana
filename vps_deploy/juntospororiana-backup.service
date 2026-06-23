@@ -1,0 +1,33 @@
+[Unit]
+Description=Juntos por Oriana - Backup local + offsite de la base de datos
+Documentation=https://github.com/blancowilson/juntospororiana
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=jpoadmin
+Group=jpoadmin
+WorkingDirectory=/var/www/juntospororiana
+Environment=PROJECT_DIR=/var/www/juntospororiana
+Environment=BACKUP_DIR=/var/backups/juntospororiana
+Environment=BACKUP_KEEP_DAYS=7
+# Transporte externo: rclone | scp | s3 (configurar abajo)
+# Environment=BACKUP_REMOTE_TYPE=rclone
+# Environment=BACKUP_REMOTE_PATH=b2:mi-bucket/juntospororiana
+ExecStart=/bin/bash /var/www/juntospororiana/scripts/backup_db.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/backups/juntospororiana /var/www/juntospororiana/.env /var/www/juntospororiana/.ssh
+ProtectHome=true
+NoNewPrivileges=true
+StandardOutput=journal
+StandardError=journal
+SuccessExitStatus=0
+# Si el script falla, no reintentar automaticamente (lo hara el timer al dia siguiente)
+
+[Install]
+WantedBy=multi-user.target

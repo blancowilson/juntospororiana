@@ -541,3 +541,100 @@ def notificar_confirmacion_tickets(
 
     texto = _armar_mensaje_confirmacion_tickets(nombre, cantidad, numeros, rifa_titulo)
     return enviar_texto(telefono, texto)
+
+
+# ==========================================================
+# Reasignacion de boletos (liberados por falta de verificacion)
+# ==========================================================
+
+_SALUDOS_REASIGNACION = [
+    "¡Hola {nombre}! 💛",
+    "¡{nombre}, un saludo! 💛",
+    "Hola {nombre} 💛",
+    "¡{nombre}, gracias por tu paciencia! 🙏",
+]
+_INTROS_REASIGNACION = [
+    "Te escribimos desde *Juntos por Oriana* para informarte que reasignamos los números de tus boletos para la rifa.",
+    "Desde *Juntos por Oriana* te informamos que los números de tus boletos fueron reasignados.",
+    "Queremos avisarte desde *Juntos por Oriana* que los números de tus boletos fueron reasignados.",
+    "Te contactamos desde *Juntos por Oriana*: tus boletos fueron reasignados para garantizar la transparencia del sorteo.",
+]
+_MOTIVOS_REASIGNACION = [
+    "Detectamos un inconveniente en el sistema de asignación al azar, por lo que preferimos reasignarlos para mantener la transparencia.",
+    "Por un detalle técnico en la asignación aleatoria, los reasignamos para garantizar la transparencia del sorteo.",
+    "Para asegurar la total transparencia del sorteo, tus números fueron reasignados de forma aleatoria.",
+]
+_DISCLAIMERS_REASIGNACION = [
+    "Tu pago y tu derecho a participar están totalmente garantizados.",
+    "Tu apoyo sigue siendo válido: solo cambian los números asignados.",
+    "Esto no afecta tu pago ni tu participación; solo cambia la numeración.",
+]
+_CIERRES_REASIGNACION = [
+    "Agradecemos tu comprensión y tu valioso apoyo para Oriana. 🙏",
+    "Mil gracias por tu paciencia y por sumarte a esta causa. 💛",
+    "Gracias por creer en Oriana y por tu comprensión. 💛",
+]
+
+_VARIANTES_REASIGNACION = [
+    # 1: informativa, con motivo
+    (
+        "{saludo}\n\n"
+        "{intro}\n\n"
+        "{motivo}\n\n"
+        "*Tus nuevos números ({cantidad}):* {numeros}\n\n"
+        "{disclaimer}\n\n"
+        "{cierre}"
+    ),
+    # 2: sobria
+    (
+        "{saludo}\n\n"
+        "{intro}\n\n"
+        "Hemos reasignado los números de tus boletos por un detalle técnico en el sistema. "
+        "Tus *{cantidad} nuevos números* son: {numeros}.\n\n"
+        "{disclaimer}\n\n"
+        "{cierre}"
+    ),
+    # 3: cercana
+    (
+        "{saludo}\n\n"
+        "{intro}\n\n"
+        "Tus {cantidad} tickets quedaron así: {numeros}.\n\n"
+        "{disclaimer}\n\n"
+        "{cierre}"
+    ),
+]
+
+
+def _armar_mensaje_reasignacion(
+    nombre: str, cantidad: int, numeros: list[str]
+) -> str:
+    saludo = random.choice(_SALUDOS_REASIGNACION).format(nombre=nombre)
+    intro = random.choice(_INTROS_REASIGNACION)
+    motivo = random.choice(_MOTIVOS_REASIGNACION)
+    disclaimer = random.choice(_DISCLAIMERS_REASIGNACION)
+    cierre = random.choice(_CIERRES_REASIGNACION)
+    lista = ", ".join(numeros) if numeros else "(pendiente)"
+
+    return _elegir_variante(
+        _VARIANTES_REASIGNACION,
+        saludo=saludo, intro=intro, motivo=motivo,
+        cantidad=cantidad, numeros=lista,
+        disclaimer=disclaimer, cierre=cierre,
+    )
+
+
+def notificar_reasignacion(
+    telefono: Optional[str],
+    nombre: str,
+    cantidad: int,
+    numeros: list[str],
+) -> bool:
+    """
+    Envia el mensaje de reasignacion cuando el admin recupera boletos liberados
+    (e.g. por el scheduler de 24h). Usa variantes con spintax para no ser
+    detectado como batch identico por Meta/WhatsApp.
+    """
+    if not telefono:
+        return False
+    texto = _armar_mensaje_reasignacion(nombre, cantidad, numeros)
+    return enviar_texto(telefono, texto)

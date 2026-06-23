@@ -6,85 +6,233 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body p-4">
-        <form hx-post="/admin/reasignar/aportante/{{ aportante.id }}" hx-target="#reasignar-result" hx-swap="innerHTML">
+        <form hx-post="/admin/reasignar/aportante/{{ aportante.id }}"
+              hx-target="#reasignar-result"
+              hx-swap="innerHTML"
+              id="form-reasignar">
             <!-- Detalles del Aportante -->
             <div class="mb-3 p-3 bg-light rounded-3">
                 <div class="small text-muted">Aportante:</div>
                 <div class="fw-bold fs-6 text-dark mb-2">{{ nombre_decrypted }}</div>
                 <div class="row text-dark small">
                     <div class="col-6">
-                        <strong>Pago Original:</strong> 
+                        <strong>Pago Original:</strong>
                         {% if aportante.moneda == 'BS' %}Bs.{% else %}${% endif %} {{ "%.2f"|format(aportante.monto_reportado) }}
                     </div>
                     <div class="col-6">
-                        <strong>Precio Rifa Actual:</strong> 
+                        <strong>Precio Rifa Actual:</strong>
                         {% if aportante.moneda == 'BS' %}Bs.{% else %}${% endif %} {{ "%.2f"|format(precio_unitario) }}
                     </div>
                 </div>
             </div>
 
-            <!-- Boletos Iniciales -->
+            <!-- Boletos Originales (estado) -->
             <div class="mb-3">
-                <label class="form-label fw-semibold text-dark small">Boletos Originales Reservados:</label>
-                <div class="d-flex flex-wrap gap-2 mb-2">
-                    {% for item in original_tickets_status %}
-                        <span class="badge {% if item.disponible %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} px-2 py-1" style="font-size: 0.85rem;">
-                            {{ "%03d"|format(item.numero) }}
-                            <small class="d-block" style="font-size: 0.65rem;">({{ "Libre" if item.disponible else item.estado }})</small>
-                        </span>
-                    {% endfor %}
-                </div>
-                {% if all_original_available %}
-                    <div class="alert alert-success py-2 px-3 border-0 rounded-3 small">
-                        <i class="fa-solid fa-circle-check me-1"></i> Todos los números originales están libres para reasignación.
+                <label class="form-label fw-semibold text-dark small mb-1">Boletos Originales Reservados:</label>
+                {% if original_tickets_status %}
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        {% for item in original_tickets_status %}
+                            <span class="badge {% if item.disponible %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} px-2 py-1" style="font-size: 0.85rem;">
+                                {{ "%03d"|format(item.numero) }}
+                                <small class="d-block" style="font-size: 0.65rem;">({{ "Libre" if item.disponible else item.estado }})</small>
+                            </span>
+                        {% endfor %}
                     </div>
+                    {% if all_original_available %}
+                        <div class="alert alert-success py-2 px-3 border-0 rounded-3 small mb-0">
+                            <i class="fa-solid fa-circle-check me-1"></i> Todos los números originales están libres.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning py-2 px-3 border-0 rounded-3 small mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> Algunos o todos los números originales ya están ocupados.
+                        </div>
+                    {% endif %}
                 {% else %}
-                    <div class="alert alert-warning py-2 px-3 border-0 rounded-3 small mb-0">
-                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Algunos o todos los números originales ya están ocupados.
+                    <div class="alert alert-info py-2 px-3 border-0 rounded-3 small mb-0">
+                        <i class="fa-solid fa-circle-info me-1"></i> Este aportante no tiene boletos originales registrados. Usa asignación al azar o selección manual.
                     </div>
                 {% endif %}
             </div>
 
-            <!-- Selección de Modo -->
+            <!-- Modo de Asignación -->
             <div class="mb-3">
-                <label class="form-label fw-semibold text-dark small">Modo de Asignación:</label>
+                <label class="form-label fw-semibold text-dark small mb-2">Modo de Asignación:</label>
+
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="mode" id="mode-original" value="original" 
-                           {% if not all_original_available %}disabled{% else %}checked{% endif %}>
+                    <input class="form-check-input mode-radio" type="radio" name="mode" id="mode-original" value="original_only_free"
+                           {% if not original_tickets_status %}disabled{% endif %}>
                     <label class="form-check-label small text-dark" for="mode-original">
-                        Intentar reasignar números originales
+                        <strong>Conservar solo los libres</strong>
+                        <span class="d-block text-muted" style="font-size:0.78rem;">Asigna únicamente los números originales que estén disponibles. La cantidad final puede ser menor a la solicitada.</span>
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="mode" id="mode-random" value="random"
-                           {% if not all_original_available %}checked{% endif %}>
+
+                <div class="form-check mb-2">
+                    <input class="form-check-input mode-radio" type="radio" name="mode" id="mode-mixed" value="mixed"
+                           {% if not original_tickets_status %}disabled{% else %}checked{% endif %}>
+                    <label class="form-check-label small text-dark" for="mode-mixed">
+                        <strong>Mixto (Recomendado)</strong>
+                        <span class="d-block text-muted" style="font-size:0.78rem;">Toma los originales libres y completa con números al azar hasta llegar a la cantidad.</span>
+                    </label>
+                </div>
+
+                <div class="form-check mb-2">
+                    <input class="form-check-input mode-radio" type="radio" name="mode" id="mode-random" value="random">
                     <label class="form-check-label small text-dark" for="mode-random">
-                        Asignar números disponibles al azar automáticamente
+                        <strong>Todos al azar</strong>
+                        <span class="d-block text-muted" style="font-size:0.78rem;">Asigna la cantidad solicitada con números al azar, ignorando los originales.</span>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input mode-radio" type="radio" name="mode" id="mode-manual" value="manual"
+                           {% if not manual_candidates %}disabled{% endif %}>
+                    <label class="form-check-label small text-dark" for="mode-manual">
+                        <strong>Selección manual</strong>
+                        <span class="d-block text-muted" style="font-size:0.78rem;">Marca exactamente qué números asignar. Si la cantidad es menor, completa con al azar.</span>
                     </label>
                 </div>
             </div>
 
             <!-- Cantidad de Boletos -->
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="cantidad" class="form-label fw-semibold text-dark small">Cantidad de Boletos a Asignar:</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light text-dark"><i class="fa-solid fa-hashtag"></i></span>
-                    <input type="number" class="form-control" id="cantidad" name="cantidad" min="1" max="100" 
+                    <input type="number" class="form-control" id="cantidad" name="cantidad" min="1" max="999"
                            value="{{ recomendado }}" required>
                 </div>
                 <div class="form-text text-muted small mt-1">
                     <i class="fa-solid fa-lightbulb text-warning me-1"></i>
-                    Recomendación calculada: <strong>{{ recomendado }}</strong> boleto(s) por el monto reportado.
+                    Recomendado: <strong>{{ recomendado }}</strong> boleto(s) por el monto reportado.
+                    Disponibles en la rifa: <strong>{{ libres_count }}</strong>.
                 </div>
             </div>
 
-            <!-- Contenedor para mensajes de resultado/error de HTMX -->
+            <!-- Picker Manual (solo visible con mode=manual) -->
+            <div class="mb-3" id="manual-picker" style="display:none;">
+                <label class="form-label fw-semibold text-dark small mb-1">Marca los números a asignar:</label>
+                <div class="d-flex flex-wrap gap-1 p-2 border rounded-3 bg-light" style="max-height: 220px; overflow-y: auto;">
+                    {% if manual_candidates %}
+                        {% for c in manual_candidates %}
+                            <label class="badge bg-white text-dark border manual-chip px-2 py-1"
+                                   style="cursor:pointer; font-size:0.85rem;">
+                                <input type="checkbox" class="manual-check me-1" value="{{ c.numero }}" data-original="{{ '1' if c.origen == 'original' else '0' }}">
+                                {{ "%03d"|format(c.numero) }}
+                            </label>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted small">No hay candidatos disponibles.</span>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div class="small text-muted">
+                        Seleccionados: <strong id="manual-count">0</strong>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" id="manual-completar" checked>
+                        <label class="form-check-label small text-dark" for="manual-completar">
+                            Completar con al azar si faltan
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notificación WhatsApp -->
+            <div class="mb-3 form-check">
+                <input class="form-check-input" type="checkbox" id="notificar-wa" name="notificar_wa" value="on" checked>
+                <label class="form-check-label small text-dark" for="notificar-wa">
+                    <i class="fa-brands fa-whatsapp text-success me-1"></i>
+                    Notificar al colaborador por WhatsApp con los nuevos números
+                </label>
+            </div>
+
+            <!-- Contenedor de mensajes del POST (HTMX) -->
             <div id="reasignar-result" class="mb-3"></div>
 
             <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-light fw-semibold rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary fw-semibold rounded-3 px-4">Proceder</button>
+                <button type="submit" class="btn btn-primary fw-semibold rounded-3 px-4" id="btn-proceder">
+                    <i class="fa-solid fa-rotate-left me-1"></i>Proceder
+                </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+(function() {
+    // Esperar a que el DOM del modal esté listo
+    const modal = document.getElementById('reasignarModal');
+    if (!modal) return;
+    const picker = document.getElementById('manual-picker');
+    const radios = modal.querySelectorAll('.mode-radio');
+    const checks = modal.querySelectorAll('.manual-check');
+    const countEl = document.getElementById('manual-count');
+    const cantidadInput = document.getElementById('cantidad');
+    const form = document.getElementById('form-reasignar');
+
+    function updatePickerVisibility() {
+        const checked = modal.querySelector('.mode-radio:checked');
+        if (!checked) {
+            picker.style.display = 'none';
+            return;
+        }
+        picker.style.display = (checked.value === 'manual') ? '' : 'none';
+    }
+
+    function updateCount() {
+        const n = modal.querySelectorAll('.manual-check:checked').length;
+        countEl.textContent = String(n);
+    }
+
+    function syncNumerosManualField() {
+        // Crea/actualiza un input hidden con CSV de números marcados
+        let hidden = form.querySelector('input[name="numeros_manual"]');
+        if (!hidden) {
+            hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'numeros_manual';
+            form.appendChild(hidden);
+        }
+        const nums = Array.from(modal.querySelectorAll('.manual-check:checked')).map(c => c.value);
+        hidden.value = nums.join(',');
+    }
+
+    radios.forEach(r => r.addEventListener('change', updatePickerVisibility));
+    checks.forEach(c => c.addEventListener('change', () => { updateCount(); syncNumerosManualField(); }));
+
+    // Antes de enviar, sincronizar el campo hidden
+    form.addEventListener('submit', function(ev) {
+        const checked = modal.querySelector('.mode-radio:checked');
+        if (checked && checked.value === 'manual') {
+            const marcados = modal.querySelectorAll('.manual-check:checked').length;
+            const cantidad = parseInt(cantidadInput.value || '0', 10);
+            const completar = modal.querySelector('#manual-completar').checked;
+            if (marcados === 0) {
+                ev.preventDefault();
+                alert('Debes marcar al menos un número en modo manual.');
+                return;
+            }
+            if (marcados > cantidad) {
+                ev.preventDefault();
+                alert('Tienes más números marcados que la cantidad solicitada. Reduce la selección o aumenta la cantidad.');
+                return;
+            }
+            if (marcados < cantidad && !completar) {
+                ev.preventDefault();
+                alert('Marcaste menos números que la cantidad y desactivaste "completar con al azar". Marca la casilla o aumenta la cantidad.');
+                return;
+            }
+            syncNumerosManualField();
+        } else {
+            // En otros modos, vaciar el hidden para que el backend no lo considere
+            const hidden = form.querySelector('input[name="numeros_manual"]');
+            if (hidden) hidden.value = '';
+        }
+    });
+
+    updatePickerVisibility();
+    updateCount();
+})();
+</script>

@@ -15,6 +15,19 @@
                 <div class="fw-bold text-success">{{ telefono_decrypted }}</div>
             </div>
 
+            <!-- Seleccionar Plantilla -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-dark small">Seleccionar Plantilla:</label>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-success active fw-semibold" id="btn-tpl-standard" onclick="applyTemplate('standard')">
+                        Confirmación Estándar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-warning text-dark fw-semibold" id="btn-tpl-reassign" onclick="applyTemplate('reassign')">
+                        Aviso de Reasignación
+                    </button>
+                </div>
+            </div>
+
             <!-- Mensaje -->
             <div class="mb-4">
                 <label for="mensaje" class="form-label fw-semibold text-dark small">Mensaje Personalizado:</label>
@@ -36,3 +49,26 @@
         </form>
     </div>
 </div>
+
+<script>
+    (function() {
+        const tplStandard = {{ mensaje_default | tojson }};
+        const tplReassign = {{ mensaje_reasignacion | tojson }};
+        
+        window.applyTemplate = function(type) {
+            const textarea = document.getElementById("mensaje");
+            const btnStd = document.getElementById("btn-tpl-standard");
+            const btnRe = document.getElementById("btn-tpl-reassign");
+            
+            if (type === 'standard') {
+                textarea.value = tplStandard;
+                btnStd.className = "btn btn-sm btn-success active fw-semibold";
+                btnRe.className = "btn btn-sm btn-outline-warning text-dark fw-semibold";
+            } else {
+                textarea.value = tplReassign;
+                btnStd.className = "btn btn-sm btn-outline-success fw-semibold";
+                btnRe.className = "btn btn-sm btn-warning active fw-semibold";
+            }
+        };
+    })();
+</script>

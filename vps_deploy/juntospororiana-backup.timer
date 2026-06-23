@@ -1,0 +1,15 @@
+[Unit]
+Description=Juntos por Oriana - Timer para backup diario de la BD
+Documentation=https://github.com/blancowilson/juntospororiana
+
+[Timer]
+# Ejecutar todos los dias a las 03:30 hora del servidor (UTC por default).
+# Esto evita las horas pico del sorteo y minimiza impacto en la app.
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+# Si el equipo estaba apagado a la hora, ejecutar al arrancar
+Unit=juntospororiana-backup.service
+AccuracySec=5min
+
+[Install]
+WantedBy=timers.target
