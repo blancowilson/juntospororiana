@@ -121,11 +121,15 @@ def estado_sesion() -> dict:
         }
 
     status = (data.get("status") or "").upper()
+    # Estados que indican sesion utilizable para enviar mensajes.
+    # OpenWA actual usa "ready" como estado terminal; "authenticated" y
+    # "connected" son estados equivalentes o legacy.
+    conectado = status in ("READY", "AUTHENTICATED", "CONNECTED")
     return {
         "configurado": True,
-        "conectado": status == "CONNECTED",
+        "conectado": conectado,
         "status": status,
-        "phone": data.get("phoneNumber"),
+        "phone": data.get("phone") or data.get("phoneNumber"),
         "push_name": data.get("pushName"),
         "platform": data.get("platform"),
         "session_id": data.get("_resolved_id"),

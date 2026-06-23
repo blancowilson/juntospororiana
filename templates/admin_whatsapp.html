@@ -190,7 +190,7 @@
                     }
 
                     // Si esta conectado, ocultamos QR
-                    if (s.conectado) {
+                    if (s.conectado || s.status === 'READY') {
                         document.getElementById('wa-qr-box').innerHTML =
                             '<div class="text-center text-success">' +
                             '<i class="fa-brands fa-whatsapp fa-4x mb-3"></i>' +
@@ -203,7 +203,7 @@
                     }
 
                     // Si esta autenticando / inicializando
-                    if (s.status === 'AUTHENTICATING' || s.status === 'INITIALIZING') {
+                    if (s.status === 'AUTHENTICATING' || s.status === 'INITIALIZING' || s.status === 'AUTHENTICATED') {
                         document.getElementById('wa-qr-box').innerHTML =
                             '<div class="text-center text-info">' +
                             '<div class="spinner-grow text-info mb-3" style="width:3rem;height:3rem;" role="status"></div>' +
