@@ -1,0 +1,77 @@
+<div class="modal-content border-0 rounded-4 shadow-lg">
+    <div class="modal-header bg-primary text-white py-3">
+        <h5 class="modal-title fw-bold" id="editarModalLabel">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Editar Aporte / Colaboración
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body p-4">
+        <form hx-post="/admin/aportante/{{ aportante.id }}/editar" 
+              hx-target="#editar-send-result" 
+              hx-swap="innerHTML"
+              hx-on::after-request="if(event.detail.successful && event.detail.xhr.responseText.includes('alert-success')) { setTimeout(function(){ window.location.reload(); }, 1500); }">
+            
+            <div class="mb-3">
+                <label for="edit-nombre" class="form-label fw-semibold text-dark small">Nombre Completo:</label>
+                <input type="text" class="form-control rounded-3" id="edit-nombre" name="nombre" value="{{ nombre_dec }}" required>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-sm-6">
+                    <label for="edit-cedula" class="form-label fw-semibold text-dark small">Cédula del Titular:</label>
+                    <input type="text" class="form-control rounded-3" id="edit-cedula" name="cedula" value="{{ cedula_dec }}">
+                </div>
+                <div class="col-sm-6">
+                    <label for="edit-telefono" class="form-label fw-semibold text-dark small">Teléfono (WhatsApp):</label>
+                    <input type="text" class="form-control rounded-3" id="edit-telefono" name="telefono" value="{{ telefono_dec }}">
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-sm-6">
+                    <label for="edit-monto" class="form-label fw-semibold text-dark small">Monto Reportado:</label>
+                    <input type="number" step="0.01" class="form-control rounded-3" id="edit-monto" name="monto_reportado" value="{{ aportante.monto_reportado }}" required>
+                </div>
+                <div class="col-sm-6">
+                    <label for="edit-moneda" class="form-label fw-semibold text-dark small">Moneda:</label>
+                    <select class="form-select rounded-3" id="edit-moneda" name="moneda" required>
+                        <option value="BS" {% if aportante.moneda == 'BS' %}selected{% endif %}>Bolívares (Bs.)</option>
+                        <option value="USD" {% if aportante.moneda == 'USD' %}selected{% endif %}>Dólares ($)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-2 mb-4">
+                <div class="col-sm-6">
+                    <label for="edit-metodo" class="form-label fw-semibold text-dark small">Método de Pago:</label>
+                    <select class="form-select rounded-3" id="edit-metodo" name="metodo_pago" required>
+                        <option value="PagoMovil" {% if aportante.metodo_pago == 'PagoMovil' %}selected{% endif %}>Pago Móvil</option>
+                        <option value="PayPal" {% if aportante.metodo_pago in ['PayPal', 'Paypal'] %}selected{% endif %}>PayPal</option>
+                        <option value="Binance" {% if aportante.metodo_pago == 'Binance' %}selected{% endif %}>Binance Pay</option>
+                        <option value="Zelle" {% if aportante.metodo_pago == 'Zelle' %}selected{% endif %}>Zelle</option>
+                        <option value="Efectivo" {% if aportante.metodo_pago == 'Efectivo' %}selected{% endif %}>Efectivo</option>
+                        <option value="Transferencia" {% if aportante.metodo_pago == 'Transferencia' %}selected{% endif %}>Transferencia Bancaria</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label for="edit-referencia" class="form-label fw-semibold text-dark small">Referencia:</label>
+                    <input type="text" class="form-control rounded-3" id="edit-referencia" name="referencia" value="{{ referencia_dec }}">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="edit-motivo" class="form-label fw-semibold text-dark small">Motivo de la edición (Requerido):</label>
+                <textarea class="form-control rounded-3" id="edit-motivo" name="motivo" rows="2" placeholder="Ej. El usuario reportó $14,707,595 por error en lugar de $147.07" required></textarea>
+            </div>
+
+            <div id="editar-send-result" class="mb-3"></div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light fw-semibold rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary fw-semibold rounded-3 px-4">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

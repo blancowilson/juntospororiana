@@ -297,26 +297,26 @@
                                         {% endif %}
                                     </td>
                                     <td id="action-container-{{ aporte.id }}">
-                                        {% if aporte.tipo_aporte == 'Rifa' %}
-                                            {% set t_estados = [] %}
-                                            {% for t in aporte.tickets %}
-                                                {% set _ = t_estados.append(t.estado) %}
-                                            {% endfor %}
-                                            {% if 'Reservado' in t_estados %}
-                                                 <div class="d-flex flex-column gap-2 align-items-center">
-                                                     <div class="btn-group btn-group-sm">
+                                        <div class="d-flex flex-column gap-1.5 align-items-stretch" style="max-width: 150px;">
+                                            {% if aporte.tipo_aporte == 'Rifa' %}
+                                                {% set t_estados = [] %}
+                                                {% for t in aporte.tickets %}
+                                                    {% set _ = t_estados.append(t.estado) %}
+                                                {% endfor %}
+                                                {% if 'Reservado' in t_estados %}
+                                                     <div class="btn-group btn-group-sm w-100">
                                                          <button class="btn btn-success"
                                                                  hx-post="/admin/confirmar/aportante/{{ aporte.id }}"
                                                                  hx-target="#status-container-{{ aporte.id }}"
                                                                  hx-swap="innerHTML"
-                                                                 hx-on::after-request="document.getElementById('action-container-{{ aporte.id }}').style.display='none';">
+                                                                 hx-on::after-request="const el = document.getElementById('action-container-{{ aporte.id }}').querySelector('.btn-group'); if (el) el.style.display='none';">
                                                              Confirmar
                                                          </button>
                                                          <button class="btn btn-outline-danger"
                                                                  hx-post="/admin/reversar/aportante/{{ aporte.id }}"
                                                                  hx-target="#status-container-{{ aporte.id }}"
                                                                  hx-swap="innerHTML"
-                                                                 hx-on::after-request="document.getElementById('action-container-{{ aporte.id }}').style.display='none';">
+                                                                 hx-on::after-request="const el = document.getElementById('action-container-{{ aporte.id }}').querySelector('.btn-group'); if (el) el.style.display='none';">
                                                              Liberar
                                                          </button>
                                                      </div>
@@ -327,27 +327,36 @@
                                                              data-bs-target="#reasignarModal">
                                                          <i class="fa-solid fa-rotate-left me-1"></i> Reasignar
                                                      </button>
-                                                 </div>
-                                             {% elif not t_estados and aporte.boletos_iniciales %}
-                                                 <button class="btn btn-sm btn-outline-primary"
-                                                         hx-get="/admin/reasignar/aportante/{{ aporte.id }}/form"
-                                                         hx-target="#reasignar-modal-content"
-                                                         data-bs-toggle="modal"
-                                                         data-bs-target="#reasignarModal">
-                                                     <i class="fa-solid fa-rotate-left me-1"></i> Reasignar boletos
-                                                 </button>
-                                             {% elif aporte.boletos_iniciales %}
-                                                 {# Defensivo: si por algun motivo los tickets quedaron como 'Disponible' #}
-                                                 {# pero aun asociados al aportante (estado inconsistente), permitir reasignar. #}
-                                                 <button class="btn btn-sm btn-outline-primary"
-                                                         hx-get="/admin/reasignar/aportante/{{ aporte.id }}/form"
-                                                         hx-target="#reasignar-modal-content"
-                                                         data-bs-toggle="modal"
-                                                         data-bs-target="#reasignarModal">
-                                                     <i class="fa-solid fa-rotate-left me-1"></i> Reasignar boletos
-                                                 </button>
-                                             {% endif %}
-                                        {% endif %}
+                                                {% elif not t_estados and aporte.boletos_iniciales %}
+                                                    <button class="btn btn-sm btn-outline-primary w-100"
+                                                            hx-get="/admin/reasignar/aportante/{{ aporte.id }}/form"
+                                                            hx-target="#reasignar-modal-content"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#reasignarModal">
+                                                        <i class="fa-solid fa-rotate-left me-1"></i> Reasignar boletos
+                                                    </button>
+                                                {% elif aporte.boletos_iniciales %}
+                                                    {# Defensivo: si por algun motivo los tickets quedaron como 'Disponible' #}
+                                                    {# pero aun asociados al aportante (estado inconsistente), permitir reasignar. #}
+                                                    <button class="btn btn-sm btn-outline-primary w-100"
+                                                            hx-get="/admin/reasignar/aportante/{{ aporte.id }}/form"
+                                                            hx-target="#reasignar-modal-content"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#reasignarModal">
+                                                        <i class="fa-solid fa-rotate-left me-1"></i> Reasignar boletos
+                                                    </button>
+                                                {% endif %}
+                                            {% endif %}
+                                            
+                                             <!-- Botón Editar común para ambos tipos -->
+                                             <button class="btn btn-sm btn-outline-secondary w-100"
+                                                     hx-get="/admin/aportante/{{ aporte.id }}/editar"
+                                                     hx-target="#editar-modal-content"
+                                                     data-bs-toggle="modal"
+                                                     data-bs-target="#editarModal">
+                                                 <i class="fa-solid fa-pen-to-square me-1"></i> Editar
+                                             </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -374,6 +383,13 @@
     <!-- Modal de WhatsApp Personalizado -->
     <div class="modal fade" id="whatsappModal" tabindex="-1" aria-labelledby="whatsappModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" id="whatsapp-modal-content">
+            <!-- Se carga dinámicamente con HTMX -->
+        </div>
+    </div>
+
+    <!-- Modal de Edición de Aporte -->
+    <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" id="editar-modal-content">
             <!-- Se carga dinámicamente con HTMX -->
         </div>
     </div>

@@ -675,6 +675,117 @@ async def reversar_aportante(aportante_id: int, request: Request, db: Session = 
         )
 
 
+@router.get("/aportante/{aportante_id}/editar", response_class=HTMLResponse)
+async def form_editar_aportante(
+    request: Request,
+    aportante_id: int,
+    db: Session = Depends(get_db)
+):
+    try:
+        aportante = db.get(Aportantes, aportante_id)
+        if not aportante:
+            return HTMLResponse('<div class="alert alert-danger">Aportante no encontrado</div>', status_code=404)
+        
+        nombre_dec = crypto.descifrar(aportante.nombre) or "Anónimo"
+        cedula_dec = crypto.descifrar(aportante.cedula) if aportante.cedula else ""
+        telefono_dec = crypto.descifrar(aportante.telefono) if aportante.telefono else ""
+        referencia_dec = crypto.descifrar(aportante.referencia) if aportante.referencia else ""
+        
+        return templates.TemplateResponse(
+            "_modal_editar.html",
+            {
+                "request": request,
+                "aportante": aportante,
+                "nombre_dec": nombre_dec,
+                "cedula_dec": cedula_dec,
+                "telefono_dec": telefono_dec,
+                "referencia_dec": referencia_dec
+            }
+        )
+    except Exception as e:
+        logger.exception(f"Error cargando formulario de edición para aportante {aportante_id}: {e}")
+        return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=500)
+
+
+@router.post("/aportante/{aportante_id}/editar", response_class=HTMLResponse)
+async def editar_aportante(
+    request: Request,
+    aportante_id: int,
+    nombre: str = Form(...),
+    cedula: str = Form(None),
+    telefono: str = Form(None),
+    monto_reportado: float = Form(...),
+    moneda: str = Form(...),
+    metodo_pago: str = Form(...),
+    referencia: str = Form(None),
+    motivo: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    aportante = db.get(Aportantes, aportante_id)
+    if not aportante:
+        return HTMLResponse('<div class="alert alert-danger">Aportante no encontrado</div>', status_code=404)
+        
+    try:
+        # Capturar valores anteriores para auditoría detallada
+        monto_previo = aportante.monto_reportado
+        moneda_previa = aportante.moneda
+        
+        # Cifrar campos y actualizar aportante
+        aportante.nombre = crypto.cifrar(nombre.strip())
+        
+        if cedula and cedula.strip():
+            aportante.cedula = crypto.cifrar(cedula.strip())
+            aportante.cedula_hash = crypto.hash_busqueda(cedula.strip())
+        else:
+            aportante.cedula = None
+            aportante.cedula_hash = None
+            
+        if telefono and telefono.strip():
+            tlf_limpio = telefono.strip()
+            aportante.telefono = crypto.cifrar(tlf_limpio)
+            aportante.telefono_hash = crypto.hash_busqueda(tlf_limpio)
+        else:
+            aportante.telefono = None
+            aportante.telefono_hash = None
+            
+        aportante.monto_reportado = monto_reportado
+        aportante.moneda = moneda.strip().upper()
+        aportante.metodo_pago = metodo_pago.strip()
+        
+        if referencia and referencia.strip():
+            aportante.referencia = crypto.cifrar(referencia.strip())
+            aportante.referencia_hash = crypto.hash_busqueda(referencia.strip())
+        else:
+            aportante.referencia = None
+            aportante.referencia_hash = None
+            
+        db.commit()
+        
+        try:
+            auth_header = request.headers.get("authorization")
+            if auth_header and auth_header.startswith("Basic "):
+                import base64
+                decoded = base64.b64decode(auth_header[6:]).decode("utf-8")
+                username = decoded.split(":")[0]
+            else:
+                username = "admin"
+        except Exception:
+            username = "admin"
+            
+        audit(
+            db, request, username, "EDITAR_APORTE", 
+            recurso_tipo="Aportantes", recurso_id=str(aportante_id),
+            detalle=f"Modificado aporte de {nombre.strip()}. Monto previo: {monto_previo} {moneda_previa} -> Nuevo monto: {monto_reportado} {moneda.strip().upper()}. Motivo: {motivo.strip()}"
+        )
+        db.commit()
+        
+        return HTMLResponse('<div class="alert alert-success">Aporte actualizado con éxito. Cargando...</div>')
+    except Exception as e:
+        db.rollback()
+        logger.exception(f"Error editando aportante {aportante_id}: {e}")
+        return HTMLResponse(f'<div class="alert alert-danger">Error: {str(e)}</div>', status_code=400)
+
+
 @router.get("/reasignar/aportante/{aportante_id}/form", response_class=HTMLResponse)
 async def reasignar_aportante_form(aportante_id: int, request: Request, db: Session = Depends(get_db)):
     try:
