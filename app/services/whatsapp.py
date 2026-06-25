@@ -153,15 +153,18 @@ _REVISIONES_TICKETS = [
     (
         "⚠️ *Importante:* estamos realizando la *revisión manual* de tu pago. "
         "Una vez confirmemos tu aporte, te enviaremos un nuevo mensaje con la "
-        "confirmación definitiva y tus tickets oficiales. 🙏"
+        "confirmación definitiva y tus tickets oficiales. "
+        "Te recordamos que el sorteo se realizará el 22 de julio por el Triple Caracas a las 7:00 PM. 🙏"
     ),
     (
         "Ahora estamos confirmando tu pago manualmente. En cuanto esté listo, "
-        "te avisamos con la confirmación final y tus tickets. 🙌"
+        "te avisamos con la confirmación final y tus tickets. "
+        "Te recordamos que el sorteo se realizará el 22 de julio por el Triple Caracas a las 7:00 PM. 🙌"
     ),
     (
         "Nuestro equipo está validando tu pago. Apenas esté confirmado, te "
-        "escribimos de nuevo con tus tickets oficiales. ⏳"
+        "escribimos de nuevo con tus tickets oficiales. "
+        "Te recordamos que el sorteo se realizará el 22 de julio por el Triple Caracas a las 7:00 PM. ⏳"
     ),
 ]
 _CIERRES_TICKETS = [
@@ -212,10 +215,10 @@ _INTROS_CONFIRMACION = [
     "Tu pago entró. Aquí tienes tus tickets para *{rifa}*.",
 ]
 _SUERTES_CONFIRMACION = [
-    "¡Mucha suerte! El sorteo se realizará en la fecha indicada. 🍀",
-    "¡Te deseamos toda la suerte del mundo! El sorteo se acerca. 🍀",
-    "¡Que la suerte te acompañe! Sorteo en la fecha indicada. ✨",
-    "¡Toda la suerte para ti! 🤞",
+    "¡Mucha suerte! El sorteo se realizará el 22 de julio por el Triple Caracas a las 7:00 PM. 🍀",
+    "¡Te deseamos toda la suerte del mundo! Recuerda que el sorteo es el 22 de julio por el Triple Caracas a las 7:00 PM. 🍀",
+    "¡Que la suerte te acompañe! El sorteo se jugará el 22 de julio por el Triple Caracas a las 7:00 PM. ✨",
+    "¡Toda la suerte para ti! El sorteo se realizará el 22 de julio por el Triple Caracas a las 7:00 PM. 🤞",
 ]
 _CIERRES_CONFIRMACION = [
     "— Equipo de Juntos por Oriana",

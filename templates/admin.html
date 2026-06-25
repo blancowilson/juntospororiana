@@ -327,13 +327,13 @@
                                                              data-bs-target="#reasignarModal">
                                                          <i class="fa-solid fa-rotate-left me-1"></i> Reasignar
                                                      </button>
-                                                {% elif not t_estados and aporte.boletos_iniciales %}
+                                                {% elif not t_estados %}
                                                     <button class="btn btn-sm btn-outline-primary w-100"
                                                             hx-get="/admin/reasignar/aportante/{{ aporte.id }}/form"
                                                             hx-target="#reasignar-modal-content"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#reasignarModal">
-                                                        <i class="fa-solid fa-rotate-left me-1"></i> Reasignar boletos
+                                                        <i class="fa-solid fa-rotate-left me-1"></i> Asignar boletos
                                                     </button>
                                                 {% elif aporte.boletos_iniciales %}
                                                     {# Defensivo: si por algun motivo los tickets quedaron como 'Disponible' #}
